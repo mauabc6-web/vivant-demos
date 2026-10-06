@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM de Preventa</title>
+<style>:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1d232d; --line:#2a323f;
+  --txt:#e8edf5; --mut:#94a2b8; --acc:#4f8cff; --ok:#27c093; --warn:#f5a524; --bad:#f2545b;
+  --r:14px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:600}
+button.sec{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f141b;color:var(--txt)}
+label{display:block;font-size:11px;color:var(--mut);margin:12px 0 5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+h1,h2,h3{margin:0 0 10px;text-wrap:balance}h2{font-size:21px}h3{font-size:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
+.mut{color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.t-ok{background:rgba(39,192,147,.15);color:var(--ok)}
+.t-warn{background:rgba(245,165,36,.15);color:var(--warn)}
+.t-bad{background:rgba(242,84,91,.15);color:var(--bad)}
+.t-info{background:rgba(79,140,255,.15);color:var(--acc)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(14,17,22,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:13px 18px;display:flex;align-items:center;gap:12px}
+header .who{flex:1;min-width:0}header .who b{display:block;font-size:14px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;background:transparent;color:var(--mut);padding:8px 14px;font-size:14px}
+nav button.on{background:var(--panel2);color:var(--txt)}
+main{padding:18px;max-width:1080px;margin:0 auto}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.kpi .n{font-size:25px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+.bar{height:8px;background:#0f141b;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--acc)}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:grid;place-items:center;z-index:50;padding:18px;overflow:auto}
+.modal .card{max-width:440px;width:100%;margin:0}
+
+.board{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;min-width:0}
+.col h3{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:10px}
+.col h3 span{font-size:11px;color:var(--mut);font-weight:600}
+.lead{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:9px;padding:10px;margin-bottom:8px;cursor:pointer}
+.lead b{font-size:13.5px;display:block}
+.lead .meta{font-size:11.5px;color:var(--mut);margin-top:3px}
+.col[data-e="perdido"] .lead{border-left-color:var(--bad)}
+.col[data-e="cerrado"] .lead{border-left-color:var(--ok)}
+.col[data-e="apartado"] .lead{border-left-color:var(--warn)}
+.emb{display:grid;gap:7px}
+.emb .f{display:grid;grid-template-columns:108px 1fr 44px;gap:9px;align-items:center;font-size:13px}
+.emb .t{height:24px;background:var(--acc);border-radius:5px;min-width:3px}
+.vend{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;gap:10px}
+.vend:last-child{border:0}
+</style>
+<header><div class="who"><b>Torre Vivant · Preventa</b><span class="mut">CRM de ventas — Dirección comercial</span></div><span class="tag t-info">Demo</span></header>
+<nav id="nav"></nav>
+<main id="view"></main>
+<script>
+const ETAPAS=[['nuevo','Nuevo'],['contacto','Contactado'],['cita','Cita agendada'],['apartado','Apartado'],['cerrado','Cerrado'],['perdido','Perdido']];
+const VEND=['Ana Lozano','Diego Pardo','Sofía Mena'];
+const FUENTES=['Facebook','Instagram','Portal inmobiliario','Referido','Espectacular','Caseta de ventas'];
+let L=[
+ {id:1,n:'Carlos Medina',tel:'81 1234 5678',f:'Referido',v:'Ana Lozano',e:'cerrado',u:'1204',m:5890000,d:2},
+ {id:2,n:'Paulina Ríos',tel:'81 2233 4455',f:'Instagram',v:'Diego Pardo',e:'apartado',u:'1101',m:4620000,d:5},
+ {id:3,n:'Grupo Delta SA',tel:'81 9988 7766',f:'Referido',v:'Ana Lozano',e:'apartado',u:'1002',m:4380000,d:1},
+ {id:4,n:'Mariana Sosa',tel:'81 5544 3322',f:'Portal inmobiliario',v:'Sofía Mena',e:'cita',u:'',m:3900000,d:3},
+ {id:5,n:'Luis Herrera',tel:'81 7788 9900',f:'Facebook',v:'Diego Pardo',e:'cita',u:'',m:5200000,d:8},
+ {id:6,n:'Renata Cantú',tel:'81 3322 1100',f:'Espectacular',v:'Sofía Mena',e:'contacto',u:'',m:0,d:1},
+ {id:7,n:'Jorge Treviño',tel:'81 6677 8899',f:'Instagram',v:'Ana Lozano',e:'contacto',u:'',m:0,d:4},
+ {id:8,n:'Fernanda Lira',tel:'81 1122 3344',f:'Caseta de ventas',v:'Diego Pardo',e:'nuevo',u:'',m:0,d:0},
+ {id:9,n:'Óscar Villa',tel:'81 4455 6677',f:'Facebook',v:'Sofía Mena',e:'nuevo',u:'',m:0,d:0},
+ {id:10,n:'Alicia Ponce',tel:'81 8899 0011',f:'Portal inmobiliario',v:'Ana Lozano',e:'perdido',u:'',m:0,d:14}
+];
+const money=n=>'$'+n.toLocaleString('es-MX');
+const corto=n=>'$'+(n/1000000).toFixed(2)+'M';
+const TABS={pipeline:'Embudo',equipo:'Equipo',origen:'Origen',nuevo:'Alta de prospecto'};
+let T='pipeline';
+function nav(){document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,n])=>`<button class="${T===k?'on':''}" onclick="go('${k}')">${n}</button>`).join('')}
+function go(t){T=t;nav();render()}
+function render(){document.getElementById('view').innerHTML=V[T]();window.scrollTo(0,0)}
+const V={};
+
+V.pipeline=()=>{
+  const act=L.filter(l=>l.e!=='perdido');
+  const cerr=L.filter(l=>l.e==='cerrado'),apar=L.filter(l=>l.e==='apartado');
+  return `<div class="grid g4" style="margin-bottom:16px">
+    ${k('Prospectos activos',act.length)}
+    ${k('Apartados',apar.length,'var(--warn)')}
+    ${k('Cerrados',cerr.length,'var(--ok)')}
+    ${k('Valor en proceso',corto([...apar,...cerr].reduce((t,l)=>t+l.m,0)))}
+  </div>
+  <h2>Embudo de venta</h2><p class="mut">Toca un prospecto para avanzarlo de etapa.</p>
+  <div class="board">${ETAPAS.map(([e,n])=>{
+    const f=L.filter(l=>l.e===e);
+    return `<div class="col" data-e="${e}"><h3>${n}<span>${f.length}</span></h3>
+    ${f.map(l=>`<div class="lead" onclick="abrir(${l.id})"><b>${l.n}</b>
+      <div class="meta">${l.v} · ${l.f}</div>
+      <div class="meta">${l.u?'Unidad '+l.u+' · '+corto(l.m):'Sin unidad asignada'}</div>
+      <div class="meta">${l.d===0?'Hoy':'hace '+l.d+' día'+(l.d>1?'s':'')}</div></div>`).join('')||'<p class="mut" style="font-size:12px">Vacío</p>'}
+    </div>`}).join('')}</div>`;
+};
+const k=(l,n,c)=>`<div class="kpi"><div class="mut">${l}</div><div class="n" style="${c?'color:'+c:''}">${n}</div></div>`;
+
+V.equipo=()=>{
+  const r=VEND.map(v=>{
+    const f=L.filter(l=>l.v===v);
+    const cer=f.filter(l=>l.e==='cerrado'||l.e==='apartado');
+    const vol=cer.reduce((t,l)=>t+l.m,0);
+    return {v,leads:f.length,cer:cer.length,vol,com:Math.round(vol*.02),conv:f.length?Math.round(cer.length/f.length*100):0};
+  }).sort((a,b)=>b.vol-a.vol);
+  const max=Math.max(...r.map(x=>x.vol),1);
+  return `<h2>Desempeño por vendedor</h2><p class="mut">Comisión calculada al 2% sobre valor colocado.</p>
+  ${r.map(x=>`<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${x.v}</h3><span class="tag ${x.conv>=50?'t-ok':x.conv>=30?'t-warn':'t-bad'}">${x.conv}% conversión</span></div>
+    <div class="bar"><i style="width:${x.vol/max*100}%"></i></div>
+    <div class="grid g4" style="margin-top:12px">
+      <div><div class="mut">Prospectos</div><b>${x.leads}</b></div>
+      <div><div class="mut">Colocadas</div><b>${x.cer}</b></div>
+      <div><div class="mut">Valor colocado</div><b>${corto(x.vol)}</b></div>
+      <div><div class="mut">Comisión</div><b style="color:var(--ok)">${money(x.com)}</b></div>
+    </div></div>`).join('')}`;
+};
+
+V.origen=()=>{
+  const r=FUENTES.map(f=>{
+    const t=L.filter(l=>l.f===f);
+    return {f,n:t.length,cer:t.filter(l=>l.e==='cerrado'||l.e==='apartado').length};
+  }).filter(x=>x.n).sort((a,b)=>b.n-a.n);
+  const max=Math.max(...r.map(x=>x.n));
+  return `<h2>De dónde llegan los prospectos</h2><p class="mut">Sirve para decidir en qué canal conviene seguir invirtiendo.</p>
+  <div class="card"><div class="emb">
+  ${r.map(x=>`<div class="f"><span class="mut">${x.f}</span><div class="t" style="width:${x.n/max*100}%;background:${x.cer?'var(--ok)':'var(--acc)'}"></div><b style="text-align:right">${x.n}</b></div>`).join('')}
+  </div><div class="sep"></div>
+  ${r.map(x=>`<div class="vend"><span>${x.f}</span><span class="mut">${x.cer} de ${x.n} avanzaron a apartado o cierre</span></div>`).join('')}
+  </div>`;
+};
+
+V.nuevo=()=>`<h2>Alta de prospecto</h2>
+<div class="card"><div class="grid g2">
+  <div><label>Nombre</label><input id="n_n" placeholder="Nombre completo"></div>
+  <div><label>Teléfono</label><input id="n_t" placeholder="81 0000 0000"></div>
+  <div><label>Cómo nos encontró</label><select id="n_f">${FUENTES.map(f=>`<option>${f}</option>`).join('')}</select></div>
+  <div><label>Vendedor asignado</label><select id="n_v">${VEND.map(v=>`<option>${v}</option>`).join('')}</select></div>
+</div><div style="height:14px"></div><button onclick="alta()">Registrar prospecto</button></div>`;
+function alta(){
+  const n=document.getElementById('n_n').value.trim();
+  if(!n){msg('Escribe el nombre del prospecto');return}
+  L.unshift({id:Date.now(),n,tel:document.getElementById('n_t').value||'—',f:document.getElementById('n_f').value,v:document.getElementById('n_v').value,e:'nuevo',u:'',m:0,d:0});
+  go('pipeline');
+}
+
+function abrir(id){
+  const l=L.find(x=>x.id===id);
+  const i=ETAPAS.findIndex(e=>e[0]===l.e);
+  modal(`<h2 style="margin:0">${l.n}</h2>
+  <p class="mut">${l.tel} · ${l.f} · Atiende ${l.v}</p>
+  <div class="sep"></div>
+  <div class="row" style="justify-content:space-between"><span class="mut">Etapa actual</span><b>${ETAPAS[i][1]}</b></div>
+  ${l.u?`<div class="row" style="justify-content:space-between"><span class="mut">Unidad</span><b>${l.u} · ${money(l.m)}</b></div>`:''}
+  <div class="row" style="justify-content:space-between"><span class="mut">Último movimiento</span><b>${l.d===0?'Hoy':'hace '+l.d+' días'}</b></div>
+  <div class="sep"></div>
+  <label>Mover a</label>
+  <select id="mv">${ETAPAS.map(([e,n])=>`<option value="${e}" ${e===l.e?'selected':''}>${n}</option>`).join('')}</select>
+  <div style="height:14px"></div>
+  <div class="row"><button style="flex:1" onclick="mover(${l.id})">Guardar</button><button class="sec" onclick="cerrarM()">Cerrar</button></div>`);
+}
+function mover(id){const l=L.find(x=>x.id===id);l.e=document.getElementById('mv').value;l.d=0;cerrarM();render()}
+function msg(t){modal(`<p style="font-size:16px;font-weight:600">${t}</p><button class="sec" style="width:100%" onclick="cerrarM()">Cerrar</button>`)}
+function modal(h){cerrarM();const d=document.createElement('div');d.className='modal';d.id='m';d.innerHTML=`<div class="card">${h}</div>`;d.onclick=e=>{if(e.target===d)cerrarM()};document.body.appendChild(d)}
+function cerrarM(){const m=document.getElementById('m');if(m)m.remove()}
+nav();render();
+</script>
+
+</body>
+</html>

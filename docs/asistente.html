@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asistente de Ventas Vivant</title>
+<style>
+/* Asistente de WhatsApp en un teléfono, misma conversación que el chat de la landing */
+:root{
+  --fondo:#0b141a; --panel:#111b21; --txt:#e9edef; --mut:#8696a0; --linea:rgba(255,255,255,.08);
+  --c-bot:#202c33; --c-yo:#005c4b; --c-yo-txt:#e9edef; --c-txt:#e9edef; --c-mut:#8696a0; --c-card:#1b2831;
+  --c-linea:rgba(255,255,255,.1); --c-linea2:rgba(37,211,102,.5); --c-acento:#e9a23f; --c-sobre-acento:#1b1405; --c-ok:#25d366;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:radial-gradient(1200px 700px at 70% -10%,#16333a 0%,#0b141a 60%,#070d11 100%);color:var(--txt);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding-block:24px 32px;padding-left:16px;padding-right:16px}
+header.intro{max-width:640px;text-align:center;margin-bottom:20px}
+header.intro h1{font-size:clamp(20px,4.4vw,28px);margin:0 0 6px;letter-spacing:-.4px;text-wrap:balance}
+header.intro p{margin:0;color:var(--mut);font-size:14px;line-height:1.5}
+.telefono{width:100%;max-width:420px;height:min(760px,82dvh);background:var(--panel);border-radius:34px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--linea),0 0 0 9px #1c1c1e;display:flex;flex-direction:column}
+.barra{background:#202c33;padding:12px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--linea);flex-shrink:0}
+.avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:linear-gradient(140deg,#e9a23f,#9a6616);color:#1b1405;display:grid;place-items:center;font-weight:800;font-size:13px}
+.quien{flex:1;min-width:0}.nombre{font-size:15px;font-weight:600;line-height:1.2}
+.estado{font-size:11.5px;color:#25d366}
+.reiniciar{background:none;border:1px solid var(--linea);color:var(--mut);border-radius:20px;padding:5px 11px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.reiniciar:hover{color:var(--txt)}
+.chat{flex:1;overflow-y:auto;padding:16px 12px 8px;background-image:linear-gradient(rgba(11,20,26,.94),rgba(11,20,26,.94)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 30h60M30 0v60' stroke='%23ffffff' stroke-opacity='.03'/%3E%3C/svg%3E")}
+.pie{padding:10px 14px;background:#202c33;border-top:1px solid var(--linea);font-size:11.5px;color:var(--mut);text-align:center;flex-shrink:0}
+.notas{max-width:420px;margin-top:18px;color:var(--mut);font-size:12.5px;line-height:1.6;text-align:center}
+.fila{display:flex;margin-bottom:8px;animation:entra .22s ease-out}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion: reduce){.fila{animation:none}}
+.fila.yo{justify-content:flex-end}
+.burbuja{max-width:84%;padding:8px 11px 6px;border-radius:12px;font-size:14.2px;line-height:1.45;background:var(--c-bot);color:var(--c-txt);position:relative;white-space:pre-wrap;word-wrap:break-word}
+.fila.yo .burbuja{background:var(--c-yo);color:var(--c-yo-txt)}
+.burbuja .hora{font-size:10.5px;opacity:.6;float:right;margin:6px 0 -2px 8px}
+.burbuja b{color:var(--c-acento)}
+.fila.yo .burbuja b{color:inherit}
+.escribiendo{display:flex;gap:4px;padding:12px 14px}
+.escribiendo i{width:7px;height:7px;border-radius:50%;background:var(--c-mut);animation:pulso 1.1s infinite}
+.escribiendo i:nth-child(2){animation-delay:.18s}.escribiendo i:nth-child(3){animation-delay:.36s}
+@keyframes pulso{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.tarjeta{background:var(--c-card);border:1px solid var(--c-linea);border-left:3px solid var(--c-acento);border-radius:10px;padding:12px 13px;margin:2px 0 4px;font-size:13.5px;max-width:90%;color:var(--c-txt)}
+.tarjeta h4{margin:0 0 9px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--c-acento)}
+.tarjeta .ren{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed var(--c-linea);font-variant-numeric:tabular-nums}
+.tarjeta .ren:last-child{border-bottom:none}
+.tarjeta .ren span:first-child{color:var(--c-mut)}
+.tarjeta .ren span:last-child{font-weight:600;text-align:right}
+.tarjeta .ren.fuerte span:last-child{color:var(--c-ok)}
+.opciones{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;padding:4px 2px 12px}
+.opciones button{background:transparent;border:1px solid var(--c-linea2);color:var(--c-txt);border-radius:18px;padding:8px 13px;font-size:13px;cursor:pointer;font:inherit;transition:.15s}
+.opciones button:hover{background:var(--c-card)}
+.opciones button.dorado{border-color:var(--c-acento);color:var(--c-acento)}
+.captura{display:flex;gap:8px;justify-content:flex-end;padding:4px 2px 12px}
+.captura input{font:inherit;font-size:14px;padding:9px 12px;border-radius:18px;border:1px solid var(--c-linea2);background:var(--c-card);color:var(--c-txt);width:min(240px,70%)}
+.captura button{font:inherit;font-size:13px;padding:8px 14px;border-radius:18px;border:0;background:var(--c-acento);color:var(--c-sobre-acento);cursor:pointer}
+
+</style>
+<header class="intro">
+  <h1>Así atiende el asistente por WhatsApp</h1>
+  <p>Reconoce si habla con alguien que quiere vivir ahí, con un inversionista o con quien ya compró, y le contesta lo que a cada uno le importa. Recorre la conversación tocando las opciones.</p>
+</header>
+<div class="telefono">
+  <div class="barra"><div class="avatar">TV</div><div class="quien"><div class="nombre">Valeria · Torre Vivant</div><div class="estado">en línea</div></div><button class="reiniciar" onclick="bot.reiniciar()">Reiniciar</button></div>
+  <div class="chat" id="chat"></div>
+  <div class="pie">Demostración sin conexión. Las respuestas salen de los datos del proyecto.</div>
+</div>
+<p class="notas">Cifras de ejemplo. En la versión contratada el asistente responde en WhatsApp real las 24 horas, y cada contacto que deja nombre y teléfono entra al seguimiento comercial.</p>
+<script>
+/* Conversación guiada del asistente de ventas de Torre Vivant. Sin API: las respuestas salen de los datos del proyecto. */
+const MXN=n=>'$'+Math.round(n).toLocaleString('es-MX');
+const TIPOS={
+  una:{n:'Una recámara',m2:58,desde:3100000,disp:6,renta:15500},
+  dos:{n:'Dos recámaras',m2:84,desde:4450000,disp:9,renta:22000},
+  tres:{n:'Tres recámaras',m2:122,desde:6430000,disp:5,renta:31000}
+};
+function crearChat(el,opts){
+  const hora=()=>new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  const abajo=()=>{el.scrollTop=el.scrollHeight};
+  let lead={};
+  function burbuja(t,mio){const f=document.createElement('div');f.className='fila'+(mio?' yo':'');f.innerHTML=`<div class="burbuja">${t}<span class="hora">${hora()}</span></div>`;el.appendChild(f);abajo()}
+  function tarjeta(tit,filas){const f=document.createElement('div');f.className='fila';f.innerHTML=`<div class="tarjeta"><h4>${tit}</h4>`+filas.map(([a,b,fu])=>`<div class="ren${fu?' fuerte':''}"><span>${a}</span><span>${b}</span></div>`).join('')+'</div>';el.appendChild(f);abajo()}
+  function opciones(lista){const d=document.createElement('div');d.className='opciones';lista.forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.t;if(o.d)b.className='dorado';b.onclick=()=>{d.remove();burbuja(o.t,true);setTimeout(()=>ir(o.ir),700)};d.appendChild(b)});el.appendChild(d);abajo()}
+  function captura(campo,ph,luego){const d=document.createElement('form');d.className='captura';d.innerHTML=`<input aria-label="${ph}" placeholder="${ph}" ${campo==='tel'?'inputmode="tel"':''}><button type="submit">Enviar</button>`;d.onsubmit=e=>{e.preventDefault();const v=d.querySelector('input').value.trim();if(!v)return;lead[campo]=v;d.remove();burbuja(v,true);setTimeout(()=>ir(luego),700)};el.appendChild(d);d.querySelector('input').focus();abajo()}
+  function escribiendo(ms,luego){const f=document.createElement('div');f.className='fila';f.innerHTML='<div class="burbuja escribiendo"><i></i><i></i><i></i></div>';el.appendChild(f);abajo();setTimeout(()=>{f.remove();luego()},ms)}
+  function secuencia(pasos){let i=0;(function sig(){if(i>=pasos.length)return;const p=pasos[i++];if(p.tipo==='ops')return opciones(p.lista);if(p.tipo==='cap')return captura(p.campo,p.ph,p.luego);const tec=Math.min(2200,500+(p.largo||40)*20),resp=Math.min(1200,350+(p.largo||40)*8);escribiendo(tec,()=>{p.hacer();setTimeout(sig,resp)})})()}
+  const txt=t=>({hacer:()=>burbuja(t),largo:t.replace(/<[^>]+>/g,'').length});
+  const card=(t,f)=>({hacer:()=>tarjeta(t,f),largo:50});
+  const ops=lista=>({tipo:'ops',lista});
+  const cap=(campo,ph,luego)=>({tipo:'cap',campo,ph,luego});
+  const menuFinal=[{t:'Agendar visita',ir:'visita',d:true},{t:'Ver precios',ir:'precios'},{t:'Plan de pagos',ir:'pagos'}];
+  const F={
+    inicio:()=>secuencia([
+      txt(`Hola, soy <b>Valeria</b>, asesora de ${opts.marca||'Torre Vivant'}.`),
+      txt('Para orientarte bien, cuéntame: ¿qué estás buscando?'),
+      ops([{t:'Quiero vivir ahí',ir:'vivir'},{t:'Me interesa como inversión',ir:'invertir',d:true},{t:'Ya compré, tengo dudas',ir:'cliente'}])
+    ]),
+    vivir:()=>secuencia([
+      txt('Qué bien. Son 48 departamentos en 12 niveles, frente al parque, con entrega en <b>marzo de 2028</b>.'),
+      txt('Quedan <b>20 disponibles</b>. ¿Qué te gustaría ver primero?'),
+      ops([{t:'Precios y tipos',ir:'precios'},{t:'Plan de pagos',ir:'pagos'},{t:'Qué tiene el edificio',ir:'amenidades'},{t:'Agendar visita',ir:'visita',d:true}])
+    ]),
+    precios:()=>secuencia([
+      txt('Hay tres tipos. El precio sube con el nivel; estos son los de arranque:'),
+      card('Departamentos disponibles',Object.values(TIPOS).map(t=>[t.n+' · '+t.m2+' m²','desde '+MXN(t.desde)])),
+      txt('La de dos recámaras es la que más se mueve: quedan 9.'),
+      ops([{t:'Plan de pagos',ir:'pagos'},{t:'Qué tiene el edificio',ir:'amenidades'},{t:'Agendar visita',ir:'visita',d:true}])
+    ]),
+    pagos:()=>secuencia([
+      txt('Se paga mientras se construye, sin intereses:'),
+      card('Plan de pagos',[['Enganche a la firma','10%'],['Durante la obra','30% en 18 mensualidades'],['Contra entrega','60%, con crédito o recursos propios']]),
+      txt('Por ejemplo, un departamento de dos recámaras de '+MXN(TIPOS.dos.desde)+':'),
+      card('Ejemplo dos recámaras',[['Enganche',MXN(TIPOS.dos.desde*.1)],['Mensualidad',MXN(TIPOS.dos.desde*.3/18),true],['Al entregar',MXN(TIPOS.dos.desde*.6)]]),
+      ops([{t:'Agendar visita',ir:'visita',d:true},{t:'Ver precios',ir:'precios'},{t:'Qué tiene el edificio',ir:'amenidades'}])
+    ]),
+    amenidades:()=>secuencia([
+      card('Lo que comparte el edificio',[['Roof garden','Terraza para 40 personas'],['Alberca','Carril de nado y asoleadero'],['Gimnasio','De 5:00 a 23:00'],['Salón de eventos','Hasta 80 invitados'],['Acceso','Caseta 24 h y visitas con código QR']]),
+      txt('Y desde el día de la entrega hay una app para reservar amenidades, dar acceso a visitas y reportar fallas.'),
+      ops(menuFinal)
+    ]),
+    invertir:()=>secuencia([
+      txt('Perfecto, vamos a los números.'),
+      txt('La zona tiene demanda de renta constante por el parque y las oficinas cercanas. ¿Qué tipo quieres analizar?'),
+      ops([{t:'Una recámara',ir:'calc:una'},{t:'Dos recámaras',ir:'calc:dos',d:true},{t:'Tres recámaras',ir:'calc:tres'}])
+    ]),
+    calc:k=>{const t=TIPOS[k];const anual=t.renta*12;secuencia([
+      txt(`<b>${t.n}</b>, ${t.m2} m². Estimación con renta de mercado de la zona:`),
+      card('Rendimiento estimado',[['Precio desde',MXN(t.desde)],['Renta mensual estimada',MXN(t.renta)],['Renta anual',MXN(anual)],['Rendimiento bruto',(anual/t.desde*100).toFixed(1)+'%',true]]),
+      txt('Además de la renta, en preventa compras por debajo del precio de entrega. Puedo mandarte el comparativo por escrito.'),
+      ops([{t:'Sí, mándamelo',ir:'visita',d:true},{t:'Plan de pagos',ir:'pagos'},{t:'Otro tipo',ir:'invertir'}])
+    ])},
+    cliente:()=>secuencia([
+      txt('Claro. ¿En qué te ayudo?'),
+      ops([{t:'Cómo va la obra',ir:'obra'},{t:'Mi siguiente pago',ir:'pago'},{t:'Mis documentos',ir:'docs'}])
+    ]),
+    obra:()=>secuencia([
+      card('Avance de obra',[['Estructura','100%'],['Albañilería','72%'],['Instalaciones','41%'],['Avance general','54%',true]]),
+      txt('Las fotos de cada semana las tienes en tu portal de comprador. ¿Te mando el acceso?'),
+      ops([{t:'Sí, mándamelo',ir:'portal',d:true},{t:'Mi siguiente pago',ir:'pago'}])
+    ]),
+    pago:()=>secuencia([
+      txt('Tu siguiente mensualidad vence el <b>15 de octubre</b>. En el portal puedes pagar con tarjeta o subir tu comprobante.'),
+      ops([{t:'Abrir mi portal',ir:'portal',d:true},{t:'Cómo va la obra',ir:'obra'}])
+    ]),
+    docs:()=>secuencia([
+      txt('Tu contrato, planos y recibos están en tu portal, en la sección Documentos.'),
+      ops([{t:'Abrir mi portal',ir:'portal',d:true}])
+    ]),
+    portal:()=>secuencia([
+      txt('Te envié el enlace a tu portal por este medio. Cualquier otra duda, aquí estoy.'),
+      ops([{t:'Volver al inicio',ir:'inicio'}])
+    ]),
+    visita:()=>secuencia([
+      txt('Con gusto. La caseta de ventas abre todos los días de 10:00 a 19:00. ¿Cómo te llamas?'),
+      cap('nombre','Tu nombre','tel')
+    ]),
+    tel:()=>secuencia([
+      txt(`Gracias, ${lead.nombre.split(' ')[0]}. ¿A qué número te confirmo?`),
+      cap('tel','Tu teléfono','listo')
+    ]),
+    listo:()=>secuencia([
+      txt('Listo. Un asesor te escribe hoy mismo para confirmar día y hora.'),
+      txt(opts.notaLead||'En la versión contratada, este contacto entra directo al seguimiento comercial con asesor asignado.'),
+      ops([{t:'Ver precios',ir:'precios'},{t:'Volver al inicio',ir:'inicio'}])
+    ])
+  };
+  function ir(c){const [k,a]=c.split(':');(F[k]||F.inicio)(a)}
+  function reiniciar(){el.innerHTML='';lead={};ir('inicio')}
+  reiniciar();
+  return {reiniciar};
+}
+
+const bot=crearChat(document.getElementById('chat'),{});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal del Comprador</title>
+<style>:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1d232d; --line:#2a323f;
+  --txt:#e8edf5; --mut:#94a2b8; --acc:#4f8cff; --ok:#27c093; --warn:#f5a524; --bad:#f2545b;
+  --r:14px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:600}
+button.sec{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f141b;color:var(--txt)}
+label{display:block;font-size:11px;color:var(--mut);margin:12px 0 5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+h1,h2,h3{margin:0 0 10px;text-wrap:balance}h2{font-size:21px}h3{font-size:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
+.mut{color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.t-ok{background:rgba(39,192,147,.15);color:var(--ok)}
+.t-warn{background:rgba(245,165,36,.15);color:var(--warn)}
+.t-bad{background:rgba(242,84,91,.15);color:var(--bad)}
+.t-info{background:rgba(79,140,255,.15);color:var(--acc)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(14,17,22,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:13px 18px;display:flex;align-items:center;gap:12px}
+header .who{flex:1;min-width:0}header .who b{display:block;font-size:14px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;background:transparent;color:var(--mut);padding:8px 14px;font-size:14px}
+nav button.on{background:var(--panel2);color:var(--txt)}
+main{padding:18px;max-width:1080px;margin:0 auto}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.kpi .n{font-size:25px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+.bar{height:8px;background:#0f141b;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--acc)}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:grid;place-items:center;z-index:50;padding:18px;overflow:auto}
+.modal .card{max-width:440px;width:100%;margin:0}
+
+.hero{background:linear-gradient(135deg,#1a2332,#161b23);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.hero .big{font-size:34px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.obra{display:grid;gap:10px}
+.etapa{display:grid;grid-template-columns:1fr 60px;gap:10px;align-items:center;font-size:14px}
+.ph{aspect-ratio:16/10;border-radius:10px;background:linear-gradient(160deg,#243040,#111820);border:1px solid var(--line);display:grid;place-items:center;color:var(--mut);font-size:12px;text-align:center;padding:10px;position:relative;overflow:hidden}
+.ph::after{content:"";position:absolute;inset:auto 0 0 0;height:38%;background:linear-gradient(0deg,rgba(79,140,255,.16),transparent)}
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .p{position:relative;padding-bottom:16px}
+.tl .p::before{content:"";position:absolute;left:-23px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--line)}
+.tl .p.hecho::before{background:var(--ok);border-color:var(--ok)}
+.tl .p.curso::before{background:var(--warn);border-color:var(--warn)}
+.pg{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--panel2)}
+.pg.vence{border-color:var(--warn)}
+.doc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--panel2);font-size:14px}
+</style>
+<header><div class="who"><b>Paulina Ríos</b><span class="mut">Unidad 1101 · Torre Vivant</span></div><span class="tag t-info">Demo</span></header>
+<nav id="nav"></nav>
+<main id="view"></main>
+<script>
+const U={n:'1101',rec:2,m2:84,precio:4620000,piso:11,ori:'Oriente',entrega:'Marzo 2028'};
+const money=n=>'$'+n.toLocaleString('es-MX');
+const MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const PAGOS=[{c:'Enganche',f:'15 ene 2026',m:462000,e:'pagado'}];
+for(let i=1;i<=18;i++){ // 18 mensualidades desde feb 2026; la 9 es la que sigue
+  const mes=i%12, anio=2026+Math.floor(i/12);
+  PAGOS.push({c:`Mensualidad ${i} de 18`,f:`15 ${MESES[mes]} ${anio}`,m:77000,e:i<9?'pagado':i===9?'proximo':'pendiente'});
+}
+PAGOS.push({c:'Liquidación contra entrega',f:'Marzo 2028',m:2772000,e:'pendiente'});
+const AVANCE=[['Cimentación',100],['Estructura',100],['Albañilería',72],['Instalaciones',41],['Acabados',8],['Áreas comunes',0]];
+const BITACORA=[
+ {t:'Colado de losa nivel 11',f:'28 sep 2026',d:'Concluido el colado del nivel donde se ubica tu departamento.',e:'hecho'},
+ {t:'Muros divisorios niveles 8 a 11',f:'15 sep 2026',d:'Avance del 60% en tu nivel.',e:'curso'},
+ {t:'Instalación hidrosanitaria',f:'2 sep 2026',d:'Trazo y ramaleo en niveles inferiores.',e:'curso'},
+ {t:'Estructura concluida',f:'10 ago 2026',d:'Los 12 niveles quedaron estructuralmente terminados.',e:'hecho'}
+];
+const ESCRIT=[
+ {t:'Contrato de compraventa firmado',f:'15 ene 2026',e:'hecho'},
+ {t:'Expediente de crédito integrado',f:'3 mar 2026',e:'hecho'},
+ {t:'Avalúo bancario',f:'Pendiente · se agenda a 6 meses de la entrega',e:''},
+ {t:'Firma de escritura',f:'Estimado abril 2028',e:''},
+ {t:'Entrega de llaves',f:'Estimado abril 2028',e:''}
+];
+const TABS={avance:'Avance de obra',pagos:'Mis pagos',unidad:'Mi unidad',docs:'Documentos',escritura:'Escrituración'};
+let T='avance';
+function nav(){document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,n])=>`<button class="${T===k?'on':''}" onclick="go('${k}')">${n}</button>`).join('')}
+function go(t){T=t;nav();render()}
+function render(){document.getElementById('view').innerHTML=V[T]();window.scrollTo(0,0)}
+const V={};
+
+V.avance=()=>{
+  const gen=Math.round(AVANCE.reduce((t,[,p])=>t+p,0)/AVANCE.length);
+  return `<div class="hero"><div class="mut">Avance general de obra</div>
+    <div class="big">${gen}%</div>
+    <div class="bar" style="height:10px"><i style="width:${gen}%;background:var(--ok)"></i></div>
+    <p class="mut" style="margin:10px 0 0">Entrega estimada: ${U.entrega}. Actualizado el 28 de septiembre de 2026.</p></div>
+  <div class="card"><h3>Avance por partida</h3><div class="obra">
+    ${AVANCE.map(([n,p])=>`<div><div class="etapa"><span>${n}</span><b style="text-align:right;font-variant-numeric:tabular-nums">${p}%</b></div>
+      <div class="bar"><i style="width:${p}%;background:${p===100?'var(--ok)':p>0?'var(--acc)':'var(--line)'}"></i></div></div>`).join('')}
+  </div></div>
+  <div class="card"><h3>Fotografías de la semana</h3>
+    <div class="grid g2">
+      <div><div class="ph">Nivel 11 · colado de losa<br>28 sep 2026</div></div>
+      <div><div class="ph">Fachada oriente<br>26 sep 2026</div></div>
+    </div>
+    <p class="mut" style="margin-top:10px">La desarrolladora publica fotografías cada semana. Recibes aviso en tu teléfono cuando hay nuevas.</p></div>
+  <div class="card"><h3>Bitácora de obra</h3><div class="tl">
+    ${BITACORA.map(b=>`<div class="p ${b.e}"><b>${b.t}</b><div class="mut">${b.f}</div><p style="margin:4px 0 0;font-size:14px">${b.d}</p></div>`).join('')}
+  </div></div>`;
+};
+
+V.pagos=()=>{
+  const pag=PAGOS.filter(p=>p.e==='pagado').reduce((t,p)=>t+p.m,0);
+  const tot=PAGOS.reduce((t,p)=>t+p.m,0);
+  const prox=PAGOS.find(p=>p.e==='proximo');
+  return `<div class="hero"><div class="mut">Pagado a la fecha</div>
+    <div class="big">${money(pag)}</div>
+    <div class="bar" style="height:10px"><i style="width:${pag/tot*100}%;background:var(--ok)"></i></div>
+    <p class="mut" style="margin:10px 0 0">${Math.round(pag/tot*100)}% de ${money(tot)} · Saldo ${money(tot-pag)}</p></div>
+  ${prox?`<div class="card" style="border-color:var(--warn)"><div class="row" style="justify-content:space-between">
+    <div><h3 style="margin:0">Siguiente pago</h3><p class="mut" style="margin:4px 0 0">${prox.c} · vence ${prox.f}</p></div>
+    <b style="font-size:20px">${money(prox.m)}</b></div>
+    <div style="height:12px"></div><button style="width:100%" onclick="msg('En la versión contratada aquí se paga con tarjeta o se sube el comprobante de transferencia. El recibo llega a tu correo en automático.')">Pagar o subir comprobante</button></div>`:''}
+  <div class="card"><h3>Calendario de pagos</h3>
+    ${PAGOS.map(p=>`<div class="pg ${p.e==='proximo'?'vence':''}">
+      <div><b style="font-size:14px">${p.c}</b><div class="mut">${p.f}</div></div>
+      <div style="text-align:right"><b style="font-variant-numeric:tabular-nums">${money(p.m)}</b>
+      <div><span class="tag ${p.e==='pagado'?'t-ok':p.e==='proximo'?'t-warn':'t-info'}">${p.e==='proximo'?'por vencer':p.e}</span></div></div></div>`).join('')}
+  </div>`;
+};
+
+V.unidad=()=>`<div class="card"><h2>Unidad ${U.n}</h2>
+  <p class="mut">Piso ${U.piso} · ${U.rec} recámaras · ${U.m2} m² · Orientación ${U.ori}</p>
+  <div class="ph" style="aspect-ratio:3/2;margin:12px 0">Plano arquitectónico de la unidad</div>
+  <div class="grid g2">
+    <div class="item"><div class="mut">Precio pactado</div><b style="font-size:17px">${money(U.precio)}</b></div>
+    <div class="item"><div class="mut">Precio por m²</div><b style="font-size:17px">${money(Math.round(U.precio/U.m2))}</b></div>
+    <div class="item"><div class="mut">Cajón de estacionamiento</div><b>E-47 y E-48</b></div>
+    <div class="item"><div class="mut">Bodega</div><b>B-12</b></div>
+  </div>
+  <div class="sep"></div><h3>Acabados seleccionados</h3>
+  <div class="doc"><span>Paquete de pisos</span><b>Porcelánico gris claro</b></div>
+  <div class="doc"><span>Cocina</span><b>Cubierta de cuarzo blanco</b></div>
+  <div class="doc"><span>Clóset principal</span><b>Nogal</b></div>
+  <p class="mut">Los cambios de acabado se solicitan hasta diciembre de 2026.</p></div>`;
+
+V.docs=()=>`<h2>Mis documentos</h2><p class="mut">Todo tu expediente en un solo lugar, disponible cuando lo necesites.</p>
+<div class="card">
+  ${[['Contrato de compraventa','PDF · 15 ene 2026','t-ok'],['Plano de la unidad','PDF · 15 ene 2026','t-ok'],['Memoria de acabados','PDF · 15 ene 2026','t-ok'],['Recibo de enganche','PDF · 15 ene 2026','t-ok'],['Recibos de mensualidades','9 archivos','t-ok'],['Régimen de condominio','En proceso','t-warn'],['Escritura','Pendiente','t-info']]
+  .map(([n,d,t])=>`<div class="doc"><div><b>${n}</b><div class="mut">${d}</div></div><span class="tag ${t}">${t==='t-ok'?'disponible':t==='t-warn'?'en proceso':'pendiente'}</span></div>`).join('')}
+</div>`;
+
+V.escritura=()=>`<h2>Proceso de escrituración</h2><p class="mut">Así vas y qué sigue. Te avisamos antes de cada paso.</p>
+<div class="card"><div class="tl">
+  ${ESCRIT.map(e=>`<div class="p ${e.e}"><b>${e.t}</b><div class="mut">${e.f}</div></div>`).join('')}
+</div></div>
+<div class="card"><h3>¿Dudas sobre tu proceso?</h3>
+  <p class="mut">Escríbele directo a tu asesor. Queda registrado y con seguimiento, no se pierde en WhatsApp.</p>
+  <label>Mensaje</label><textarea id="msg" rows="3" placeholder="Escribe tu pregunta"></textarea>
+  <div style="height:12px"></div><button onclick="enviar()">Enviar a mi asesor</button></div>`;
+function enviar(){
+  const t=document.getElementById('msg').value.trim();
+  if(!t){msg('Escribe tu pregunta antes de enviar.');return}
+  document.getElementById('msg').value='';
+  msg('Mensaje enviado a Diego Pardo. Normalmente responde el mismo día hábil.');
+}
+function msg(t){modal(`<p style="font-size:16px;font-weight:600;margin:0 0 14px">${t}</p><button class="sec" style="width:100%" onclick="cerrarM()">Cerrar</button>`)}
+function modal(h){cerrarM();const d=document.createElement('div');d.className='modal';d.id='m';d.innerHTML=`<div class="card">${h}</div>`;d.onclick=e=>{if(e.target===d)cerrarM()};document.body.appendChild(d)}
+function cerrarM(){const m=document.getElementById('m');if(m)m.remove()}
+nav();render();
+</script>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selector de Unidades</title>
+<style>:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1d232d; --line:#2a323f;
+  --txt:#e8edf5; --mut:#94a2b8; --acc:#4f8cff; --ok:#27c093; --warn:#f5a524; --bad:#f2545b;
+  --r:14px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:600}
+button.sec{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f141b;color:var(--txt)}
+label{display:block;font-size:11px;color:var(--mut);margin:12px 0 5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+h1,h2,h3{margin:0 0 10px;text-wrap:balance}h2{font-size:21px}h3{font-size:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
+.mut{color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.t-ok{background:rgba(39,192,147,.15);color:var(--ok)}
+.t-warn{background:rgba(245,165,36,.15);color:var(--warn)}
+.t-bad{background:rgba(242,84,91,.15);color:var(--bad)}
+.t-info{background:rgba(79,140,255,.15);color:var(--acc)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(14,17,22,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:13px 18px;display:flex;align-items:center;gap:12px}
+header .who{flex:1;min-width:0}header .who b{display:block;font-size:14px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;background:transparent;color:var(--mut);padding:8px 14px;font-size:14px}
+nav button.on{background:var(--panel2);color:var(--txt)}
+main{padding:18px;max-width:1080px;margin:0 auto}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.kpi .n{font-size:25px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+.bar{height:8px;background:#0f141b;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--acc)}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:grid;place-items:center;z-index:50;padding:18px;overflow:auto}
+.modal .card{max-width:440px;width:100%;margin:0}
+
+.torre{display:grid;gap:5px;overflow-x:auto;padding-bottom:6px}
+.piso{display:grid;grid-template-columns:52px repeat(4,minmax(78px,1fr));gap:5px;align-items:stretch}
+.pn{display:grid;place-items:center;font-size:11px;color:var(--mut);font-weight:700;background:var(--panel2);border-radius:8px}
+.u{border:1px solid var(--line);border-radius:8px;padding:8px 6px;cursor:pointer;text-align:center;background:var(--panel);transition:transform .12s,border-color .12s}
+.u:hover{transform:translateY(-2px);border-color:var(--acc)}
+.u .num{font-size:12.5px;font-weight:700}
+.u .pre{font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+.u.disponible{border-left:3px solid var(--ok)}
+.u.apartado{border-left:3px solid var(--warn);opacity:.9}
+.u.vendido{border-left:3px solid var(--bad);opacity:.5}
+.u.off{opacity:.16;pointer-events:none}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:12px}
+.leg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.pago{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pago:last-child{border:0}
+</style>
+<header><div class="who"><b>Torre Vivant · Preventa</b><span class="mut">Selector de unidades — Vista de vendedor</span></div><span class="tag t-info">Demo</span></header>
+<main>
+<div class="grid g4" id="kpis"></div>
+<div class="card">
+  <h2>Inventario por piso</h2>
+  <p class="mut">Toca cualquier unidad para ver ficha, orientación y plan de pagos.</p>
+  <div class="grid g4" style="margin-bottom:14px">
+    <div><label>Disponibilidad</label><select id="f1" onchange="pintar()"><option value="">Todas</option><option value="disponible">Disponible</option><option value="apartado">Apartada</option><option value="vendido">Vendida</option></select></div>
+    <div><label>Recámaras</label><select id="f2" onchange="pintar()"><option value="">Todas</option><option value="1">1 recámara</option><option value="2">2 recámaras</option><option value="3">3 recámaras</option></select></div>
+    <div><label>Precio máximo</label><select id="f3" onchange="pintar()"><option value="">Sin límite</option><option value="3500000">Hasta $3.5 M</option><option value="5000000">Hasta $5 M</option><option value="7000000">Hasta $7 M</option></select></div>
+    <div><label>Orientación</label><select id="f4" onchange="pintar()"><option value="">Todas</option><option>Norte</option><option>Sur</option><option>Oriente</option><option>Poniente</option></select></div>
+  </div>
+  <div class="torre" id="torre"></div>
+  <div class="leg">
+    <span><i style="background:var(--ok)"></i>Disponible</span>
+    <span><i style="background:var(--warn)"></i>Apartada</span>
+    <span><i style="background:var(--bad)"></i>Vendida</span>
+  </div>
+</div>
+</main>
+<script>
+const ORI=['Norte','Oriente','Sur','Poniente'];
+const VIS=['Parque','Avenida','Patio interior','Ciudad'];
+const U=[];
+for(let p=12;p>=1;p--){
+  for(let i=1;i<=4;i++){
+    const rec = i===1?1 : i===4?3 : 2;
+    const m2 = rec===1?58 : rec===2?84 : 122;
+    const precio = Math.round((m2*52000 + p*85000)/10000)*10000;
+    const r=(p*7+i*13)%10;
+    const est = p>=10 ? (r<6?'disponible':'apartado') : r<3?'vendido' : r<6?'apartado':'disponible';
+    U.push({id:`${p}0${i}`,piso:p,rec,m2,precio,est,ori:ORI[i-1],vista:VIS[(p+i)%4],est_lb:est});
+  }
+}
+const money=n=>'$'+n.toLocaleString('es-MX');
+const corto=n=>'$'+(n/1000000).toFixed(2)+'M';
+
+function kpis(){
+  const d=U.filter(u=>u.est==='disponible'),a=U.filter(u=>u.est==='apartado'),v=U.filter(u=>u.est==='vendido');
+  const colocado=[...a,...v].reduce((t,u)=>t+u.precio,0);
+  document.getElementById('kpis').innerHTML=
+   kpi('Unidades totales',U.length)+
+   kpi('Disponibles',d.length,'var(--ok)')+
+   kpi('Colocadas',a.length+v.length+' · '+Math.round((a.length+v.length)/U.length*100)+'%')+
+   kpi('Valor colocado',corto(colocado));
+}
+const kpi=(l,n,c)=>`<div class="kpi"><div class="mut">${l}</div><div class="n" style="${c?'color:'+c:''}">${n}</div></div>`;
+
+function pintar(){
+  const f1=v('f1'),f2=v('f2'),f3=+v('f3')||0,f4=v('f4');
+  const ok=u=>(!f1||u.est===f1)&&(!f2||u.rec==+f2)&&(!f3||u.precio<=f3)&&(!f4||u.ori===f4);
+  let h='';
+  for(let p=12;p>=1;p--){
+    h+=`<div class="piso"><div class="pn">P${p}</div>`;
+    U.filter(u=>u.piso===p).forEach(u=>{
+      h+=`<div class="u ${u.est} ${ok(u)?'':'off'}" onclick="ficha('${u.id}')">
+        <div class="num">${u.id}</div><div class="pre">${corto(u.precio)}</div></div>`;
+    });
+    h+='</div>';
+  }
+  document.getElementById('torre').innerHTML=h;
+}
+const v=id=>document.getElementById(id).value;
+
+function ficha(id){
+  const u=U.find(x=>x.id===id);
+  const eng=Math.round(u.precio*.1), mens=Math.round(u.precio*.3/18), ent=u.precio-eng-mens*18;
+  const t={disponible:'t-ok',apartado:'t-warn',vendido:'t-bad'}[u.est];
+  modal(`<div class="row" style="justify-content:space-between"><h2 style="margin:0">Unidad ${u.id}</h2><span class="tag ${t}">${u.est}</span></div>
+  <p class="mut">Piso ${u.piso} · ${u.rec} recámara${u.rec>1?'s':''} · ${u.m2} m² · Orientación ${u.ori} · Vista a ${u.vista.toLowerCase()}</p>
+  <div class="sep"></div>
+  <div class="row" style="justify-content:space-between"><span class="mut">Precio de lista</span><b style="font-size:19px">${money(u.precio)}</b></div>
+  <div class="row" style="justify-content:space-between"><span class="mut">Precio por m²</span><b>${money(Math.round(u.precio/u.m2))}</b></div>
+  <div class="sep"></div>
+  <h3>Plan de pagos sugerido</h3>
+  <div class="pago"><span>Enganche 10% a la firma</span><b>${money(eng)}</b></div>
+  <div class="pago"><span>18 mensualidades durante obra</span><b>${money(mens)}</b></div>
+  <div class="pago"><span>Liquidación contra entrega</span><b>${money(ent)}</b></div>
+  <div class="sep"></div>
+  ${u.est==='disponible'
+    ? `<button style="width:100%" onclick="apartar('${u.id}')">Apartar para un prospecto</button>`
+    : `<p class="mut">Esta unidad ya no está disponible.</p>`}
+  <div style="height:8px"></div><button class="sec" style="width:100%" onclick="cerrar()">Cerrar</button>`);
+}
+function apartar(id){
+  const u=U.find(x=>x.id===id); u.est='apartado';
+  kpis(); pintar(); cerrar();
+  modal(`<h3>Unidad ${id} apartada</h3><p class="mut">Queda bloqueada para el resto del equipo de ventas en este momento. Se envía la ficha al prospecto y al CRM.</p><button class="sec" style="width:100%" onclick="cerrar()">Entendido</button>`);
+}
+function modal(h){cerrar();const d=document.createElement('div');d.className='modal';d.id='m';d.innerHTML=`<div class="card">${h}</div>`;d.onclick=e=>{if(e.target===d)cerrar()};document.body.appendChild(d)}
+function cerrar(){const m=document.getElementById('m');if(m)m.remove()}
+kpis();pintar();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Torre Vivant · Portal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1d232d; --line:#2a323f;
+  --txt:#e8edf5; --mut:#94a2b8; --acc:#4f8cff; --ok:#27c093; --warn:#f5a524; --bad:#f2545b;
+  --r:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:600}
+button.sec{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+button.danger{background:var(--bad)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f141b;color:var(--txt)}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px;text-transform:uppercase;letter-spacing:.06em}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:16px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
+h1,h2,h3{margin:0 0 10px}
+h2{font-size:20px}h3{font-size:15px}
+.mut{color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em}
+.t-ok{background:rgba(39,192,147,.15);color:var(--ok)}
+.t-warn{background:rgba(245,165,36,.15);color:var(--warn)}
+.t-bad{background:rgba(242,84,91,.15);color:var(--bad)}
+.t-info{background:rgba(79,140,255,.15);color:var(--acc)}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.box{width:100%;max-width:420px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.roles button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);font-size:13px;text-align:left;padding:10px 12px}
+.roles button.on{border-color:var(--acc);background:rgba(79,140,255,.12)}
+/* app */
+header{position:sticky;top:0;z-index:20;background:rgba(14,17,22,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:12px}
+header .who{flex:1;min-width:0}
+header .who b{display:block;font-size:14px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;background:transparent;color:var(--mut);padding:8px 14px;font-size:14px}
+nav button.on{background:var(--panel2);color:var(--txt)}
+main{padding:18px;max-width:1080px;margin:0 auto}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.kpi .n{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+.bar{height:8px;background:#0f141b;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--acc)}
+#panic{position:fixed;right:18px;bottom:18px;z-index:40;width:72px;height:72px;border-radius:50%;background:var(--bad);font-size:11px;font-weight:800;box-shadow:0 10px 30px rgba(242,84,91,.45);line-height:1.2}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:grid;place-items:center;z-index:50;padding:20px}
+.modal .card{max-width:420px;width:100%;margin:0;text-align:center}
+#qrbox{background:#fff;padding:14px;border-radius:12px;display:inline-block;margin:10px 0}
+ul{margin:8px 0;padding-left:18px}
+.sep{height:1px;background:var(--line);margin:14px 0}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <div class="box">
+    <div class="card">
+      <h1 style="font-size:22px">Torre Vivant</h1>
+      <p class="mut">Portal de residentes, seguridad y administración.</p>
+      <label>Perfil de acceso (demo)</label>
+      <div class="roles" id="roleBtns"></div>
+      <label>Correo</label>
+      <input id="email" placeholder="correo@dominio.com">
+      <label>Contraseña</label>
+      <input id="pass" type="password" placeholder="••••••••" value="demo">
+      <div style="height:14px"></div>
+      <button style="width:100%" onclick="doLogin()">Entrar</button>
+      <p class="mut" id="hint" style="margin-top:12px"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" style="display:none">
+  <header>
+    <div class="who"><b id="uName"></b><span class="mut" id="uRole"></span></div>
+    <button class="sec" onclick="logout()">Salir</button>
+  </header>
+  <nav id="nav"></nav>
+  <main id="view"></main>
+  <button id="panic" onclick="panic()" style="display:none">SOS<br>EMERGENCIA</button>
+</div>
+
+<script>
+/* ==================== DATOS ==================== */
+const K='vivant.v1';
+const ROLES={
+  residente:{n:'Residente',d:'Reserva amenidades, genera QR de visita, reporta fallas.'},
+  familiar:{n:'Familiar / Papás',d:'Ve avisos, accesos de su hijo y botón de emergencia.'},
+  seguridad:{n:'Seguridad',d:'Valida QR, publica avisos, atiende alertas SOS.'},
+  mantenimiento:{n:'Mantenimiento',d:'Recibe y actualiza reportes con evidencia.'},
+  inversionista:{n:'Inversionista',d:'Ocupación, ingresos, morosidad y rentabilidad.'},
+  admin:{n:'Administración',d:'Acceso total.'}
+};
+const USERS=[
+  {id:'u1',name:'Mauricio Varela',email:'residente@vivant.mx',role:'residente',unit:'Torre A · 704',depto:'A-704'},
+  {id:'u2',name:'Laura Varela',email:'papas@vivant.mx',role:'familiar',unit:'Tutor de 704',linkedTo:'u1'},
+  {id:'u3',name:'Caseta Principal',email:'seguridad@vivant.mx',role:'seguridad',unit:'Lobby'},
+  {id:'u4',name:'Jorge Ruiz',email:'mantenimiento@vivant.mx',role:'mantenimiento',unit:'Cuadrilla 1'},
+  {id:'u5',name:'Grupo Inmobiliario Norte',email:'inversionista@vivant.mx',role:'inversionista',unit:'12 unidades'},
+  {id:'u6',name:'Admin Torre Vivant',email:'admin@vivant.mx',role:'admin',unit:'Dirección'}
+];
+const AMENIDADES=[
+  {id:'a1',n:'Roof Garden',cap:40,hrs:'10:00 – 23:00',costo:800},
+  {id:'a2',n:'Salón de eventos',cap:80,hrs:'12:00 – 02:00',costo:2500},
+  {id:'a3',n:'Alberca',cap:25,hrs:'07:00 – 21:00',costo:0},
+  {id:'a4',n:'Gimnasio',cap:15,hrs:'05:00 – 23:00',costo:0},
+  {id:'a5',n:'Sala de juntas',cap:10,hrs:'08:00 – 20:00',costo:400},
+  {id:'a6',n:'Asador / Terraza',cap:20,hrs:'12:00 – 22:00',costo:600}
+];
+const seed={
+  reservas:[{id:'r1',amen:'a3',user:'u1',fecha:hoy(),hora:'18:00',horas:2,personas:4,estado:'confirmada'}],
+  avisos:[
+    {id:'v1',t:'Simulacro de evacuación',c:'Jueves 10:00 hrs. Participación obligatoria por torre. Punto de reunión: plaza sur.',nivel:'info',por:'Seguridad',ts:Date.now()-86400000},
+    {id:'v2',t:'Intento de acceso no autorizado',c:'Se detectó una persona sin registro en estacionamiento B. Ya fue retirada. Reporten placas desconocidas.',nivel:'alto',por:'Seguridad',ts:Date.now()-7200000}
+  ],
+  reportes:[
+    {id:'p1',t:'Fuga en cisterna 2',c:'Escurrimiento constante en la válvula principal.',area:'Hidráulico',prio:'alta',estado:'en proceso',por:'u1',ts:Date.now()-172800000,foto:null,bitacora:['Reporte recibido','Cuadrilla asignada']}
+  ],
+  pases:[],
+  alertas:[]
+};
+let DB=load(), ME=null, TAB=null, ROLE_SEL='residente';
+
+function load(){try{return Object.assign(JSON.parse(JSON.stringify(seed)),JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){return JSON.parse(JSON.stringify(seed))}}
+function save(){localStorage.setItem(K,JSON.stringify(DB))}
+function hoy(){return new Date().toISOString().slice(0,10)}
+function uid(){return Math.random().toString(36).slice(2,9)}
+function fmt(ts){return new Date(ts).toLocaleString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+function money(n){return '$'+n.toLocaleString('es-MX')}
+function esc(s){return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]))}
+
+
+/* ==================== SEGMENTACIÓN POR ROL ==================== */
+// Alcance de datos personales: quién puede ver registros de quién.
+function scope(){
+  if(ME.role==='admin') return '*';                 // acceso total
+  if(ME.role==='familiar') return [ME.id,ME.linkedTo].filter(Boolean);
+  return [ME.id];                                   // residente y demás: solo lo propio
+}
+function mine(ownerId){const s=scope();return s==='*'||s.includes(ownerId)}
+function can(x){
+  const P={
+    reservar:['residente','admin'],
+    verReservas:['residente','familiar','admin'],
+    generarPase:['residente','familiar','admin'],
+    validarPase:['seguridad','admin'],
+    verTodosPases:['seguridad','admin'],
+    publicarAviso:['seguridad','admin'],
+    crearReporte:['residente','admin'],
+    atenderReporte:['mantenimiento','admin'],
+    verTodosReportes:['mantenimiento','admin'],
+    verAlertas:['seguridad','familiar','admin'],
+    verTodasAlertas:['seguridad','admin'],
+    verNumeros:['inversionista','admin'],
+    sos:['residente','familiar','seguridad','admin']
+  };
+  return (P[x]||[]).includes(ME.role);
+}
+// Identidad del residente: mantenimiento y seguridad ven unidad, no nombre completo.
+function quien(id){
+  const u=USERS.find(x=>x.id===id)||{};
+  if(ME.role==='admin'||mine(id)) return u.name||'—';
+  return 'Unidad '+(u.depto||u.unit||'—');
+}
+
+/* ==================== LOGIN ==================== */
+const rb=document.getElementById('roleBtns');
+Object.entries(ROLES).forEach(([k,v])=>{
+  const b=document.createElement('button');b.textContent=v.n;b.onclick=()=>selRole(k);b.dataset.r=k;rb.appendChild(b);
+});
+function selRole(r){
+  ROLE_SEL=r;
+  [...rb.children].forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+  const u=USERS.find(x=>x.role===r);
+  document.getElementById('email').value=u.email;
+  document.getElementById('hint').textContent=ROLES[r].d+' · Contraseña demo: demo';
+}
+selRole('residente');
+function doLogin(){
+  const em=document.getElementById('email').value.trim().toLowerCase();
+  const u=USERS.find(x=>x.email===em);
+  if(!u||document.getElementById('pass').value!=='demo'){alert('Credenciales inválidas. Usa un perfil demo con contraseña: demo');return}
+  ME=u;
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('uName').textContent=u.name;
+  document.getElementById('uRole').textContent=ROLES[u.role].n+' · '+u.unit;
+  document.getElementById('panic').style.display=can('sos')?'block':'none';
+  buildNav();
+}
+function logout(){ME=null;location.reload()}
+
+/* ==================== NAVEGACIÓN ==================== */
+const TABS={
+  inicio:{n:'Inicio',roles:'*'},
+  amenidades:{n:'Amenidades',roles:['residente','familiar','admin']},
+  accesos:{n:'Accesos QR',roles:['residente','familiar','seguridad','admin']},
+  avisos:{n:'Avisos',roles:'*'},
+  reportes:{n:'Mantenimiento',roles:['residente','mantenimiento','admin']},
+  alertas:{n:'Alertas SOS',roles:['seguridad','familiar','admin']},
+  numeros:{n:'Indicadores',roles:['inversionista','admin']}
+};
+function allowed(t){const r=TABS[t].roles;return r==='*'||r.includes(ME.role)}
+function buildNav(){
+  const n=document.getElementById('nav');n.innerHTML='';
+  Object.keys(TABS).filter(allowed).forEach((t,i)=>{
+    const b=document.createElement('button');b.textContent=TABS[t].n;b.onclick=()=>go(t);b.dataset.t=t;n.appendChild(b);
+    if(i===0&&!TAB)TAB=t;
+  });
+  go(TAB&&allowed(TAB)?TAB:'inicio');
+}
+function go(t){
+  TAB=t;
+  [...document.getElementById('nav').children].forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  render();
+}
+function render(){
+  if(!allowed(TAB)){ // candado: ningún rol renderiza una vista fuera de su alcance
+    document.getElementById('view').innerHTML='<div class="card"><h3>Sin acceso</h3><p class="mut">Tu perfil no tiene permiso para ver esta sección.</p></div>';
+    return;
+  }
+  document.getElementById('view').innerHTML=VIEWS[TAB]();window.scrollTo(0,0);
+}
+
+/* ==================== VISTAS ==================== */
+const VIEWS={};
+
+VIEWS.inicio=()=>{
+  const misRes=DB.reservas.filter(r=>mine(r.user)&&r.estado==='confirmada');
+  const misPases=DB.pases.filter(p=>(can('verTodosPases')||mine(p.por))&&p.estado==='vigente');
+  const abiertos=DB.reportes.filter(r=>r.estado!=='resuelto'&&(can('verTodosReportes')||mine(r.por))).length;
+  const sos=misAlertas().filter(a=>a.estado==='activa').length;
+  let k='';
+  if(can('verReservas')) k+=kpi('Reservas activas',misRes.length)+kpi('Pases vigentes',misPases.length);
+  if(can('crearReporte')||can('verTodosReportes')) k+=kpi('Reportes abiertos',abiertos);
+  if(can('verAlertas')) k+=kpi('Alertas SOS',sos,sos?'t-bad':'t-ok');
+  if(ME.role==='inversionista') k+=kpi('Ocupación','92%')+kpi('Ingreso mensual',money(1840000))+kpi('Morosidad','6.4%');
+  return `<h2>Hola, ${esc(ME.name.split(' ')[0])}</h2>
+  <p class="mut">${ROLES[ME.role].d}</p>
+  <div class="grid g4" style="margin:16px 0">${k}</div>
+  <div class="card"><h3>Últimos avisos</h3>${DB.avisos.slice().sort((a,b)=>b.ts-a.ts).slice(0,3).map(avisoHTML).join('')||'<p class="mut">Sin avisos.</p>'}</div>`;
+};
+function kpi(l,n,cls){return `<div class="kpi"><div class="mut">${l}</div><div class="n ${cls==='t-bad'?'':''}" style="${cls==='t-bad'?'color:var(--bad)':''}">${n}</div></div>`}
+
+/* ---- AMENIDADES ---- */
+VIEWS.amenidades=()=>{
+  const esAdmin=ME.role==='admin';
+  const lista=DB.reservas.filter(r=>mine(r.user))
+    .sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+  const proximas=lista.filter(r=>r.estado==='confirmada'&&r.fecha>=hoy());
+  const f_am=window._fAm||'', f_fe=window._fFe||'';
+  const filtrada=esAdmin?lista.filter(r=>(!f_am||r.amen===f_am)&&(!f_fe||r.fecha===f_fe)):lista;
+  return `<h2>Amenidades</h2>
+  ${esAdmin?`<div class="grid g4" style="margin-bottom:16px">
+    ${kpi('Reservas confirmadas',DB.reservas.filter(r=>r.estado==='confirmada').length)}
+    ${kpi('Hoy',DB.reservas.filter(r=>r.fecha===hoy()&&r.estado==='confirmada').length)}
+    ${kpi('Próximas',proximas.length)}
+    ${kpi('Ingreso por reservas',money(DB.reservas.filter(r=>r.estado==='confirmada').reduce((t,r)=>t+(AMENIDADES.find(a=>a.id===r.amen)||{costo:0}).costo,0)))}
+  </div>`:''}
+  <div class="grid g2" style="margin-bottom:16px">
+  ${AMENIDADES.map(a=>{
+    const hoyR=DB.reservas.filter(r=>r.amen===a.id&&r.fecha===hoy()&&r.estado==='confirmada');
+    return `<div class="card"><div class="row" style="justify-content:space-between"><h3>${a.n}</h3>${a.costo?`<span class="tag t-warn">${money(a.costo)}</span>`:'<span class="tag t-ok">Sin costo</span>'}</div>
+    <p class="mut">Cupo ${a.cap} personas · ${a.hrs}</p>
+    <p class="mut">${hoyR.length} reserva(s) hoy${esAdmin&&hoyR.length?': '+hoyR.map(r=>r.hora).join(', '):''}</p>
+    ${can('reservar')?`<button class="sec" style="width:100%" onclick="reservar('${a.id}')">Reservar</button>`
+      :esAdmin?`<button class="sec" style="width:100%" onclick="verAmenidad('${a.id}')">Ver agenda</button>`
+      :'<p class="mut">Solo el residente titular puede reservar.</p>'}</div>`}).join('')}
+  </div>
+  <div class="card"><h3>${esAdmin?'Todas las reservas del edificio':'Mis reservas'}</h3>
+  ${esAdmin?`<div class="grid g2">
+    <div><label>Amenidad</label><select onchange="window._fAm=this.value;render()">
+      <option value="">Todas</option>${AMENIDADES.map(a=>`<option value="${a.id}" ${f_am===a.id?'selected':''}>${a.n}</option>`).join('')}</select></div>
+    <div><label>Fecha</label><input type="date" value="${f_fe}" onchange="window._fFe=this.value;render()"></div>
+  </div><div style="height:6px"></div>
+  ${f_am||f_fe?`<button class="sec" onclick="window._fAm='';window._fFe='';render()">Limpiar filtros</button><div style="height:10px"></div>`:''}`:''}
+  ${filtrada.length?filtrada.map(r=>{const a=AMENIDADES.find(x=>x.id===r.amen);
+    return `<div class="item"><div class="row" style="justify-content:space-between">
+      <b>${a.n}</b><span class="tag ${r.estado==='confirmada'?'t-ok':'t-bad'}">${r.estado}</span></div>
+      <p class="mut">${r.fecha} · ${r.hora} · ${r.horas} h · ${r.personas} personas${a.costo?' · '+money(a.costo):''}</p>
+      ${r.user!==ME.id?`<p class="mut">Reservó: ${esc(quien(r.user))}</p>`:''}
+      ${r.estado==='confirmada'&&(r.user===ME.id||esAdmin)?`<button class="sec" onclick="cancelar('${r.id}')">Cancelar</button>`:''}</div>`}).join('')
+    :`<p class="mut">${esAdmin?'No hay reservas con esos filtros.':'Aún no tienes reservas.'}</p>`}</div>`;
+};
+function verAmenidad(id){window._fAm=id;window._fFe='';render()}
+function reservar(id){
+  const a=AMENIDADES.find(x=>x.id===id);
+  modal(`<h3>Reservar ${a.n}</h3><p class="mut">Cupo máximo ${a.cap} · ${a.hrs}</p>
+  <div style="text-align:left">
+  <label>Fecha</label><input id="m_f" type="date" value="${hoy()}" min="${hoy()}">
+  <label>Hora de inicio</label><input id="m_h" type="time" value="18:00">
+  <label>Duración (horas)</label><input id="m_d" type="number" value="2" min="1" max="8">
+  <label>Personas</label><input id="m_p" type="number" value="4" min="1" max="${a.cap}"></div>
+  <div style="height:14px"></div>
+  <div class="row"><button style="flex:1" onclick="okReserva('${id}')">Confirmar${a.costo?' · '+money(a.costo):''}</button><button class="sec" onclick="closeModal()">Cancelar</button></div>`);
+}
+function okReserva(id){
+  const a=AMENIDADES.find(x=>x.id===id);
+  const f=val('m_f'),h=val('m_h'),d=+val('m_d'),p=+val('m_p');
+  if(!f||!h){alert('Completa fecha y hora');return}
+  if(p>a.cap){alert('Excede el cupo de '+a.cap);return}
+  const choque=DB.reservas.some(r=>r.amen===id&&r.fecha===f&&r.hora===h&&r.estado==='confirmada');
+  if(choque){alert('Ese horario ya está ocupado.');return}
+  DB.reservas.push({id:uid(),amen:id,user:ME.id,fecha:f,hora:h,horas:d,personas:p,estado:'confirmada'});
+  save();closeModal();render();
+}
+function cancelar(id){const r=DB.reservas.find(x=>x.id===id);r.estado='cancelada';save();render()}
+
+/* ---- ACCESOS QR ---- */
+VIEWS.accesos=()=>{
+  const mios=DB.pases.filter(p=>can('verTodosPases')||mine(p.por)).sort((a,b)=>b.ts-a.ts);
+  const puedeGenerar=can('generarPase');
+  return `<h2>Control de acceso</h2>
+  ${puedeGenerar?`<div class="card"><h3>Generar pase de visita</h3>
+    <div class="grid g2">
+      <div><label>Nombre del visitante</label><input id="q_n" placeholder="Nombre completo"></div>
+      <div><label>Tipo</label><select id="q_t"><option>Visita</option><option>Proveedor</option><option>Paquetería</option><option>Servicio doméstico</option><option>Uber / Taxi</option></select></div>
+      <div><label>Válido el día</label><input id="q_f" type="date" value="${hoy()}" min="${hoy()}"></div>
+      <div><label>Vigencia (horas)</label><input id="q_h" type="number" value="4" min="1" max="24"></div>
+      <div><label>Placas (opcional)</label><input id="q_p" placeholder="ABC-123"></div>
+      <div><label>Acompañantes</label><input id="q_a" type="number" value="0" min="0" max="10"></div>
+    </div><div style="height:14px"></div>
+    <button onclick="genPase()">Generar QR</button></div>`:''}
+  ${can('validarPase')?`<div class="card"><h3>Validar código en caseta</h3>
+    <label>Código del pase</label><input id="q_v" placeholder="VIV-XXXXXX" style="text-transform:uppercase">
+    <div style="height:12px"></div><button onclick="validar()">Validar acceso</button></div>`:''}
+  <div class="card"><h3>${can('verTodosPases')?'Bitácora de pases del edificio':'Pases de mi unidad'}</h3>
+  ${mios.length?mios.map(p=>`<div class="item"><div class="row" style="justify-content:space-between">
+     <b>${esc(p.nombre)}</b><span class="tag ${p.estado==='vigente'?'t-ok':p.estado==='usado'?'t-info':'t-bad'}">${p.estado}</span></div>
+     <p class="mut">${p.tipo} · ${p.fecha} · ${p.horas} h · código <b>${p.code}</b>${p.placas?' · placas '+esc(p.placas):''}</p>
+     <p class="mut">Autorizó: ${esc(quien(p.por))} · ${fmt(p.ts)}${p.usoTs?' · ingresó '+fmt(p.usoTs):''}</p>
+     <div class="row"><button class="sec" onclick="verQR('${p.id}')">Ver QR</button>
+     ${p.estado==='vigente'&&(mine(p.por)||ME.role==='admin')?`<button class="sec" onclick="revocar('${p.id}')">Revocar</button>`:''}</div></div>`).join('')
+   :'<p class="mut">Sin pases registrados.</p>'}</div>`;
+};
+function genPase(){
+  const n=val('q_n').trim();if(!n){alert('Escribe el nombre del visitante');return}
+  const p={id:uid(),code:'VIV-'+uid().toUpperCase().slice(0,6),nombre:n,tipo:val('q_t'),fecha:val('q_f'),horas:+val('q_h'),placas:val('q_p').trim(),acomp:+val('q_a'),por:ME.id,ts:Date.now(),estado:'vigente',usoTs:null};
+  DB.pases.push(p);save();render();verQR(p.id);
+}
+function verQR(id){
+  const p=DB.pases.find(x=>x.id===id);
+  const payload=JSON.stringify({c:p.code,n:p.nombre,f:p.fecha,h:p.horas,u:'704'});
+  modal(`<h3>Pase de acceso</h3><p class="mut">${esc(p.nombre)} · ${p.tipo}</p>
+    <div id="qrbox"></div>
+    <p style="font-size:20px;font-weight:800;letter-spacing:.1em">${p.code}</p>
+    <p class="mut">Válido ${p.fecha} por ${p.horas} h${p.placas?' · '+esc(p.placas):''}</p>
+    <div style="height:10px"></div><button class="sec" onclick="closeModal()">Cerrar</button>`);
+  new QRCode(document.getElementById('qrbox'),{text:payload,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
+}
+function revocar(id){DB.pases.find(x=>x.id===id).estado='revocado';save();render()}
+function validar(){
+  const c=val('q_v').trim().toUpperCase();
+  const p=DB.pases.find(x=>x.code===c);
+  if(!p){toast('Código no encontrado','t-bad');return}
+  if(p.estado!=='vigente'){toast('Pase '+p.estado.toUpperCase()+' — acceso denegado','t-bad');return}
+  p.estado='usado';p.usoTs=Date.now();save();render();
+  toast('ACCESO AUTORIZADO · '+p.nombre+' ('+p.tipo+')','t-ok');
+}
+
+/* ---- AVISOS ---- */
+VIEWS.avisos=()=>{
+  const puede=can('publicarAviso');
+  return `<h2>Avisos de seguridad</h2>
+  ${puede?`<div class="card"><h3>Publicar aviso</h3>
+    <label>Título</label><input id="v_t">
+    <label>Mensaje</label><textarea id="v_c" rows="3"></textarea>
+    <label>Nivel</label><select id="v_n"><option value="info">Informativo</option><option value="medio">Preventivo</option><option value="alto">Urgente</option></select>
+    <div style="height:12px"></div><button onclick="pubAviso()">Publicar a todo el edificio</button></div>`:''}
+  <div class="card">${DB.avisos.slice().sort((a,b)=>b.ts-a.ts).map(avisoHTML).join('')||'<p class="mut">Sin avisos.</p>'}</div>`;
+};
+function avisoHTML(a){
+  const t={info:'t-info',medio:'t-warn',alto:'t-bad'}[a.nivel];
+  return `<div class="item"><div class="row" style="justify-content:space-between"><b>${esc(a.t)}</b><span class="tag ${t}">${a.nivel}</span></div>
+  <p style="margin:6px 0">${esc(a.c)}</p><p class="mut">${esc(a.por)} · ${fmt(a.ts)}</p></div>`;
+}
+function pubAviso(){
+  const t=val('v_t').trim(),c=val('v_c').trim();
+  if(!t||!c){alert('Completa título y mensaje');return}
+  DB.avisos.push({id:uid(),t,c,nivel:val('v_n'),por:ME.name,ts:Date.now()});save();render();
+}
+
+/* ---- MANTENIMIENTO ---- */
+VIEWS.reportes=()=>{
+  const puedeCrear=can('crearReporte');
+  const puedeSubir=can('atenderReporte');
+  const list=DB.reportes.filter(r=>can('verTodosReportes')||mine(r.por)).slice().sort((a,b)=>b.ts-a.ts);
+  return `<h2>Mantenimiento</h2>
+  ${puedeCrear?`<div class="card"><h3>Levantar reporte</h3>
+    <div class="grid g2">
+      <div><label>Título</label><input id="r_t" placeholder="Ej. Elevador detenido"></div>
+      <div><label>Área</label><select id="r_a"><option>Eléctrico</option><option>Hidráulico</option><option>Elevadores</option><option>Áreas comunes</option><option>Limpieza</option><option>Otro</option></select></div>
+    </div>
+    <label>Descripción</label><textarea id="r_c" rows="3"></textarea>
+    <div class="grid g2"><div><label>Prioridad</label><select id="r_p"><option>baja</option><option selected>media</option><option>alta</option></select></div>
+    <div><label>Evidencia (foto)</label><input id="r_f" type="file" accept="image/*"></div></div>
+    <div style="height:12px"></div><button onclick="nuevoReporte()">Enviar reporte</button></div>`:''}
+  ${puedeSubir?`<p class="mut">Actualiza el estado y sube evidencia del trabajo realizado.</p>`:''}
+  ${list.map(r=>`<div class="card"><div class="row" style="justify-content:space-between">
+    <h3 style="margin:0">${esc(r.t)}</h3>
+    <div class="row"><span class="tag ${r.prio==='alta'?'t-bad':r.prio==='media'?'t-warn':'t-info'}">${r.prio}</span>
+    <span class="tag ${r.estado==='resuelto'?'t-ok':'t-warn'}">${r.estado}</span></div></div>
+    <p class="mut">${r.area} · ${esc(quien(r.por))} · ${fmt(r.ts)}</p>
+    <p>${esc(r.c)}</p>
+    ${r.foto?`<img src="${r.foto}" style="max-width:100%;border-radius:10px;margin:8px 0">`:''}
+    <div class="sep"></div><p class="mut">Bitácora</p><ul class="mut">${r.bitacora.map(b=>`<li>${esc(b)}</li>`).join('')}</ul>
+    ${puedeSubir?`<div class="row">
+      <input id="n_${r.id}" placeholder="Nota de avance" style="flex:1;min-width:180px">
+      <button class="sec" onclick="nota('${r.id}')">Agregar</button>
+      <label style="margin:0"><input type="file" accept="image/*" style="display:none" onchange="foto('${r.id}',this)"><span></span></label>
+      <button class="sec" onclick="this.previousElementSibling.querySelector('input').click()">Subir foto</button>
+      ${r.estado!=='resuelto'?`<button onclick="cerrar('${r.id}')">Marcar resuelto</button>`:''}</div>`:''}
+  </div>`).join('')||`<p class="mut">${puedeCrear?'No has levantado reportes.':'Sin reportes asignados.'}</p>`}`;
+};
+function nuevoReporte(){
+  const t=val('r_t').trim(),c=val('r_c').trim();
+  if(!t||!c){alert('Completa título y descripción');return}
+  const f=document.getElementById('r_f').files[0];
+  const push=(foto)=>{DB.reportes.push({id:uid(),t,c,area:val('r_a'),prio:val('r_p'),estado:'abierto',por:ME.id,ts:Date.now(),foto,bitacora:['Reporte recibido']});save();render()};
+  if(f){const fr=new FileReader();fr.onload=e=>push(e.target.result);fr.readAsDataURL(f)}else push(null);
+}
+function nota(id){const v=val('n_'+id).trim();if(!v)return;const r=DB.reportes.find(x=>x.id===id);r.bitacora.push(v+' — '+ME.name);r.estado='en proceso';save();render()}
+function foto(id,inp){const f=inp.files[0];if(!f)return;const fr=new FileReader();fr.onload=e=>{const r=DB.reportes.find(x=>x.id===id);r.foto=e.target.result;r.bitacora.push('Evidencia fotográfica adjuntada — '+ME.name);save();render()};fr.readAsDataURL(f)}
+function cerrar(id){const r=DB.reportes.find(x=>x.id===id);r.estado='resuelto';r.bitacora.push('Trabajo concluido — '+ME.name);save();render()}
+
+/* ---- ALERTAS SOS ---- */
+function misAlertas(){return can('verTodasAlertas')?DB.alertas:DB.alertas.filter(a=>mine(a.userId))}
+VIEWS.alertas=()=>{
+  const l=misAlertas().slice().sort((a,b)=>b.ts-a.ts);
+  return `<h2>Alertas de emergencia</h2>
+  ${l.length?l.map(a=>`<div class="card" style="${a.estado==='activa'?'border-color:var(--bad)':''}">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">${esc(a.tipo)}</h3>
+    <span class="tag ${a.estado==='activa'?'t-bad':'t-ok'}">${a.estado}</span></div>
+    <p class="mut">${esc(a.nombre)} · ${esc(a.unidad)} · ${fmt(a.ts)}</p>
+    ${a.estado==='activa'&&can('verTodasAlertas')?`<button onclick="atender('${a.id}')">Marcar atendida</button>`:`<p class="mut">Atendida por ${esc(a.porQuien)}</p>`}
+  </div>`).join('')
+  :`<p class="mut">${can('verTodasAlertas')?'Sin alertas. El botón SOS de los residentes aparece aquí en tiempo real.':'Sin emergencias en tu unidad.'}</p>`}`;
+};
+function panic(){
+  modal(`<h3 style="color:var(--bad)">Emergencia</h3><p class="mut">Se notificará a caseta con tu unidad y ubicación.</p>
+  <div style="text-align:left"><label>Tipo</label><select id="s_t">
+    <option>Médica</option><option>Incendio</option><option>Robo / intruso</option><option>Violencia</option><option>Otra</option></select></div>
+  <div style="height:14px"></div>
+  <div class="row"><button class="danger" style="flex:1" onclick="okPanic()">Enviar alerta</button><button class="sec" onclick="closeModal()">Cancelar</button></div>`);
+}
+function okPanic(){
+  DB.alertas.push({id:uid(),userId:ME.id,tipo:val('s_t'),nombre:ME.name,unidad:ME.unit,ts:Date.now(),estado:'activa',porQuien:null});
+  save();closeModal();toast('Alerta enviada a caseta. Mantén la línea abierta.','t-bad');
+  if(TAB==='alertas'||TAB==='inicio')render();
+}
+function atender(id){const a=DB.alertas.find(x=>x.id===id);a.estado='atendida';a.porQuien=ME.name;save();render()}
+
+/* ---- INDICADORES ---- */
+VIEWS.numeros=()=>{
+  const meses=['Abr','May','Jun','Jul','Ago','Sep'];
+  const ing=[1620,1685,1710,1755,1802,1840];
+  const max=Math.max(...ing);
+  const ocupTorre=[['Torre A',96],['Torre B',91],['Torre C',88],['Locales',75]];
+  return `<h2>Indicadores del activo</h2>
+  <div class="grid g4" style="margin:16px 0">
+    ${kpi('Ocupación','92%')}${kpi('Ingreso mensual',money(1840000))}${kpi('Morosidad','6.4%')}${kpi('Cap rate','7.8%')}
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Ingresos por mes (miles MXN)</h3>
+      ${meses.map((m,i)=>`<div style="margin:10px 0"><div class="row" style="justify-content:space-between"><span class="mut">${m}</span><b>${money(ing[i]*1000)}</b></div>
+      <div class="bar"><i style="width:${ing[i]/max*100}%"></i></div></div>`).join('')}</div>
+    <div class="card"><h3>Ocupación por torre</h3>
+      ${ocupTorre.map(([t,p])=>`<div style="margin:10px 0"><div class="row" style="justify-content:space-between"><span class="mut">${t}</span><b>${p}%</b></div>
+      <div class="bar"><i style="width:${p}%;background:${p>90?'var(--ok)':p>80?'var(--warn)':'var(--bad)'}"></i></div></div>`).join('')}</div>
+    <div class="card"><h3>Gasto operativo</h3>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Mantenimiento</span><b>${money(212000)}</b></div></div>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Seguridad</span><b>${money(168000)}</b></div></div>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Energía y agua</span><b>${money(143500)}</b></div></div>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Administración</span><b>${money(96000)}</b></div></div>
+      <div class="sep"></div><div class="row" style="justify-content:space-between"><b>NOI estimado</b><b style="color:var(--ok)">${money(1220500)}</b></div></div>
+    <div class="card"><h3>Actividad operativa</h3>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Reservas de amenidades (mes)</span><b>${DB.reservas.length+128}</b></div></div>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Accesos de visita registrados</span><b>${DB.pases.length+942}</b></div></div>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Reportes abiertos</span><b>${DB.reportes.filter(r=>r.estado!=='resuelto').length}</b></div></div>
+      <div class="sep"></div><p class="mut">Cifras agregadas. Este perfil no tiene acceso a nombres, unidades, reportes ni accesos individuales.</p>
+      <div class="item"><div class="row" style="justify-content:space-between"><span>Tiempo medio de atención</span><b>18 h</b></div></div></div>
+  </div>`;
+};
+
+/* ==================== UTILIDADES UI ==================== */
+function val(id){return document.getElementById(id).value}
+function modal(html){
+  closeModal();
+  const d=document.createElement('div');d.className='modal';d.id='modal';
+  d.innerHTML=`<div class="card">${html}</div>`;
+  d.onclick=e=>{if(e.target===d)closeModal()};
+  document.body.appendChild(d);
+}
+function closeModal(){const m=document.getElementById('modal');if(m)m.remove()}
+function toast(msg,cls){
+  modal(`<h3 class="tag ${cls}" style="font-size:13px">${cls==='t-ok'?'OK':'AVISO'}</h3><p style="font-size:17px;font-weight:600;margin:12px 0">${esc(msg)}</p><button class="sec" onclick="closeModal()">Cerrar</button>`);
+}
+</script>
+</body>
+</html>

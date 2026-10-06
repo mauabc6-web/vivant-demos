@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<meta charset="utf-8">
+<title>Propuesta por Fases Vivant</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+/* Cotización: columna única de lectura, tabla de alcance, bloque de inversión destacado, condiciones al pie */
+:root{
+  --papel:#f7f6f2; --panel:#ffffff; --tinta:#1b2027; --tinta2:#5b6572; --tinta3:#8b94a0;
+  --linea:#dedad2; --laton:#8a6a2f; --laton-bg:#f2ead9;
+  --ok:#2f6b4f; --ok-bg:#e6efe9;
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --texto:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding-block:48px 64px;padding-left:20px;padding-right:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--laton);font-weight:600}
+h1{font-family:var(--display);font-size:clamp(30px,6vw,42px);font-weight:500;line-height:1.15;margin-top:10px;letter-spacing:-.01em}
+h2{font-family:var(--display);font-size:clamp(21px,4vw,26px);font-weight:500;margin-bottom:6px}
+h3{font-size:15px;font-weight:600}
+p{margin:0 0 14px}
+.sub{color:var(--tinta2)}
+section{margin-top:48px}
+.rule{height:1px;background:var(--linea);border:0;margin:0}
+
+/* encabezado */
+.meta{display:grid;gap:14px 28px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:26px;padding-top:22px;border-top:2px solid var(--tinta)}
+.meta div{min-width:0}
+.meta dt{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta3);font-weight:600;margin-bottom:3px}
+.meta dd{margin:0;font-size:14.5px;font-weight:500}
+
+/* alcance */
+.mod{display:grid;gap:0;border:1px solid var(--linea);border-radius:4px;overflow:hidden;background:var(--panel)}
+.mod>div{display:grid;grid-template-columns:150px 1fr;gap:4px 20px;padding:16px 18px;border-bottom:1px solid var(--linea)}
+.mod>div:last-child{border-bottom:0}
+.mod b{font-size:14px}
+.mod span{color:var(--tinta2);font-size:14px;min-width:0}
+@media(max-width:560px){.mod>div{grid-template-columns:1fr;gap:4px}}
+
+/* inversión */
+.precio{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:22px}
+.precio.destacado{border:2px solid var(--laton)}
+.precio+.precio{margin-top:16px}
+.precio-top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.monto{font-family:var(--display);font-size:clamp(26px,5vw,34px);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.chip{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;padding:4px 9px;border-radius:2px;background:var(--laton-bg);color:var(--laton)}
+.precio ul{margin:14px 0 0;padding-left:18px;color:var(--tinta2);font-size:14px}
+.precio li{margin-bottom:5px}
+
+/* pagos */
+.pagos{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:6px}
+.pago{background:var(--panel);border:1px solid var(--linea);border-left:3px solid var(--laton);border-radius:3px;padding:14px 16px}
+.pago .pct{font-family:var(--display);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.pago .cuando{font-size:13px;color:var(--tinta2);margin-top:2px}
+.pago .mxn{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:6px}
+
+/* listas simples */
+.lista{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.lista li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:14.5px;color:var(--tinta2)}
+.lista li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--laton);margin-top:9px}
+.lista b{color:var(--tinta);font-weight:600}
+.no li::before{background:var(--tinta3)}
+
+/* tabla recurrente */
+table{width:100%;border-collapse:collapse;font-size:14px}
+.tabla-wrap{overflow-x:auto;border:1px solid var(--linea);border-radius:4px;background:var(--panel)}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--linea);vertical-align:top}
+th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+
+.nota{background:var(--ok-bg);border-radius:4px;padding:16px 18px;font-size:14px;color:var(--tinta);border-left:3px solid var(--ok)}
+.cond{font-size:13.5px;color:var(--tinta2);display:grid;gap:9px;padding-left:18px;margin:0}
+.firma{margin-top:52px;padding-top:24px;border-top:2px solid var(--tinta);display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.firma .linea-firma{border-bottom:1px solid var(--tinta3);height:40px}
+.firma small{display:block;margin-top:7px;font-size:12px;color:var(--tinta3)}
+
+/* fases */
+.fase{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:20px;display:grid;gap:12px}
+.fase+.fase{margin-top:14px}
+.fase-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.fase-n{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--laton)}
+.fase h3{font-family:var(--display);font-size:21px;font-weight:500;margin-top:2px}
+.fase .monto{font-size:clamp(22px,4.5vw,28px)}
+.fase p{margin:0;color:var(--tinta2);font-size:14.5px}
+.fase ul{margin:0;padding-left:18px;color:var(--tinta2);font-size:14px;display:grid;gap:4px}
+.pie-fase{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding-top:12px;border-top:1px solid var(--linea);font-size:13px;color:var(--tinta2)}
+.pie-fase b{color:var(--tinta);font-weight:600}
+.demo{margin-left:auto;font-weight:600;color:var(--laton);text-decoration:none;border-bottom:1px solid currentColor}
+.demo:focus-visible{outline:2px solid var(--laton);outline-offset:3px}
+.etapa-obra{margin:34px 0 14px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--tinta3)}
+.etapa-obra::after{content:"";flex:1;height:1px;background:var(--linea)}
+.pagos2{text-align:right}.pagos2 small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600}
+.total{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;align-items:baseline;padding:18px 20px;border:2px solid var(--tinta);border-radius:4px;margin-top:18px}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Propuesta · Plataforma digital por etapas</p>
+    <h1>Una plataforma que crece con la obra, un paso a la vez</h1>
+    <p class="sub" style="font-size:16px;max-width:62ch">Cada fase se contrata por separado, se entrega funcionando y se paga sola con lo que resuelve. No hay compromiso de continuar con la siguiente.</p>
+    <dl class="meta">
+      <div><dt>Preparada para</dt><dd>Sergio Moreno</dd></div>
+      <div><dt>Proyecto</dt><dd>Por definir</dd></div>
+      <div><dt>Elaborada por</dt><dd>Mauricio Varela</dd></div>
+      <div><dt>Folio</dt><dd>PRO-2026-002</dd></div>
+      <div><dt>Fecha</dt><dd>6 de octubre de 2026</dd></div>
+      <div><dt>Vigencia</dt><dd>30 días naturales</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2>Qué gana el proyecto</h2>
+    <p class="sub">Hoy la venta vive en WhatsApp, una hoja de cálculo y llamadas a la oficina. Eso cuesta ventas, horas y confianza. Cada fase ataca una de esas fugas.</p>
+    <ul class="lista">
+      <li><span><b>Más prospectos, y de mejor calidad.</b> Toda la publicidad cae en una página donde el interesado deja nombre y teléfono, y una asesora virtual le contesta al momento, de día o de noche.</span></li>
+      <li><span><b>Cero ventas dobles y cero unidades olvidadas.</b> El inventario vive en un plano al día: cuando un vendedor aparta, los demás lo ven al instante.</span></li>
+      <li><span><b>Ningún prospecto se cae por descuido.</b> Cada persona que preguntó tiene vendedor asignado y etapa visible. Se sabe qué vendedor cierra y qué anuncio sí trae gente.</span></li>
+      <li><span><b>Compradores tranquilos que no cancelan.</b> Quien ya pagó ve fotos del avance, su calendario de pagos y sus documentos desde el teléfono, sin llamar a la oficina.</span></li>
+      <li><span><b>Un edificio que se entrega funcionando.</b> Desde el día de las llaves, los residentes reservan amenidades, dan acceso a visitas con QR y reportan fallas desde una app.</span></li>
+      <li><span><b>Números para los socios sin pedírselos a nadie.</b> Ocupación, ingresos y morosidad en un tablero.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Cómo funciona</h2>
+    <ul class="lista">
+      <li><span><b>Se empieza por lo que vende.</b> Las primeras fases ayudan a colocar unidades hoy; las últimas administran el edificio cuando se entregue.</span></li>
+      <li><span><b>Pagos pequeños.</b> Cada fase se cubre en dos pagos, uno al iniciar y otro al recibirla funcionando. El primero es de $6,000.</span></li>
+      <li><span><b>Todo conecta.</b> La unidad que se aparta en la fase 2 es la misma que el asistente cotiza, la que el comprador ve en la fase 5 y la que habita en la fase 6. La información se captura una sola vez.</span></li>
+      <li><span><b>Demostración disponible.</b> Cada fase tiene un prototipo navegable para revisarlo antes de decidir.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Las fases</h2>
+
+    <div class="etapa-obra">Durante la preventa</div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 1</span><h3>Página del proyecto</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$6,000 MXN</div></div></div>
+      <p>La página pública del edificio, hecha para que el interesado deje sus datos. Es a donde llega toda la publicidad.</p>
+      <ul>
+        <li>Tipologías, precios desde, amenidades y plan de pagos</li><li>Formulario de contacto y chat de asesora que avisan al equipo de ventas</li><li>Lista para anuncios en Facebook, Instagram y Google</li><li>Se ve bien en teléfono y carga rápido</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>1 a 2 semanas</b></span><span>Fase completa <b>$12,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/index.html">Ver demostración</a></div>
+    </div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 2</span><h3>Selector de unidades</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$9,000 MXN</div></div></div>
+      <p>El inventario del edificio en un plano por piso, siempre al día. Sustituye la hoja de cálculo que comparte el equipo de ventas.</p>
+      <ul>
+        <li>Disponibilidad en tiempo real: disponible, apartada, vendida</li><li>Filtros por recámaras, precio y orientación</li><li>Ficha de cada unidad con plan de pagos calculado</li><li>Apartado que bloquea la unidad para el resto del equipo</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>2 semanas</b></span><span>Fase completa <b>$18,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/selector.html">Ver demostración</a></div>
+    </div>
+
+        <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 3</span><h3>Asistente de ventas</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$11,000 MXN</div></div></div>
+      <p>Una asesora virtual que contesta en WhatsApp y en el chat de la página a cualquier hora. Reconoce si habla con quien quiere vivir ahí, con un inversionista o con quien ya compró.</p>
+      <ul>
+        <li>Precios, plan de pagos y amenidades con los datos reales del proyecto</li><li>Cálculo de enganche, mensualidad y rendimiento sin equivocarse: las cuentas las hace el sistema, no la inteligencia artificial</li><li>Pide nombre y teléfono y los pasa al equipo de ventas</li><li>Atiende a quien ya compró: avance de obra, pagos y documentos</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>2 semanas</b></span><span>Fase completa <b>$22,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/asistente.html">Ver demostración</a></div>
+    </div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 4</span><h3>Seguimiento comercial</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$13,000 MXN</div></div></div>
+      <p>Cada prospecto registrado, con vendedor asignado y etapa visible. Ninguno se pierde por falta de seguimiento.</p>
+      <ul>
+        <li>Embudo de venta por etapas, de primer contacto a cierre</li><li>Desempeño y comisiones por vendedor</li><li>Origen de prospectos, para saber qué publicidad funciona</li><li>Recibe los contactos de la página y actualiza el inventario al apartar</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>3 semanas</b></span><span>Fase completa <b>$26,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/ventas.html">Ver demostración</a></div>
+    </div>
+
+    <div class="etapa-obra">Durante la construcción</div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 5</span><h3>Portal del comprador</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$17,000 MXN</div></div></div>
+      <p>Quien ya compró consulta su avance de obra, sus pagos y sus documentos sin llamar a la oficina. Menos llamadas, menos cancelaciones.</p>
+      <ul>
+        <li>Avance de obra por partida, con fotografías y bitácora</li><li>Calendario de pagos con estatus y recordatorios</li><li>Expediente digital: contrato, planos, recibos</li><li>Seguimiento del proceso de escrituración</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>3 a 4 semanas</b></span><span>Fase completa <b>$34,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/comprador.html">Ver demostración</a></div>
+    </div>
+
+    <div class="etapa-obra">Antes de la entrega del edificio</div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 6</span><h3>Aplicación de residentes</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$21,000 MXN</div></div></div>
+      <p>El edificio se entrega con su plataforma lista desde el primer día. Se instala en el teléfono desde un enlace.</p>
+      <ul>
+        <li>Perfiles de residente y administración</li><li>Reserva de amenidades con control de cupo y horarios</li><li>Avisos del edificio por nivel de urgencia</li><li>Panel de administración con todas las reservas</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>4 a 5 semanas</b></span><span>Fase completa <b>$42,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/residentes.html">Ver demostración</a></div>
+    </div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 7</span><h3>Accesos y mantenimiento</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$26,000 MXN</div></div></div>
+      <p>Se suman a la aplicación el control de visitas en caseta y los reportes de fallas.</p>
+      <ul>
+        <li>Pases de visita con código QR y bitácora de entradas</li><li>Perfil de seguridad para validar accesos</li><li>Reportes con fotografía, avances y cierre</li><li>Perfil de mantenimiento con bandeja de pendientes</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>5 semanas</b></span><span>Fase completa <b>$52,000</b></span><span style="margin-left:auto">Incluida en la demostración de la fase 6</span></div>
+    </div>
+
+    <div class="etapa-obra">Con el edificio operando</div>
+
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 8</span><h3>Emergencias, indicadores y tiendas</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$30,000 MXN</div></div></div>
+      <p>La plataforma completa: respuesta a emergencias, tablero para inversionistas y publicación en App Store y Google Play.</p>
+      <ul>
+        <li>Botón de emergencia con aviso inmediato a caseta</li><li>Perfil de familiares vinculado a la unidad</li><li>Indicadores de ocupación, ingresos y morosidad, sin datos personales</li><li>Publicación en ambas tiendas y notificaciones al teléfono</li>
+      </ul>
+      <div class="pie-fase"><span>Entrega <b>5 a 6 semanas</b></span><span>Fase completa <b>$60,000</b></span><span style="margin-left:auto">Incluida en la demostración de la fase 6</span></div>
+    </div>
+
+    <p class="nota" style="margin-top:18px">Se empieza con un primer pago de $6,000. Cada fase se decide por separado, cuando la anterior ya está funcionando y dando resultado.</p>
+    <p class="sub" style="margin-top:12px;font-size:13.5px">Precios en pesos mexicanos, más IVA. Cada fase se cubre en dos pagos: uno al iniciar y otro al recibirla funcionando. Los plazos cuentan a partir del primer pago de cada fase.</p>
+  </section>
+
+  <section>
+    <h2>Soporte mensual</h2>
+    <p class="sub">Opcional. Cubre actualizaciones, respaldos, monitoreo y corrección de fallas.</p>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Etapa</th><th>Cubre</th><th>Costo</th></tr></thead>
+        <tbody>
+          <tr><td><b>Fases 1 a 5</b></td><td>Página, asistente, herramientas de venta y portal del comprador</td><td class="num">$2,500 MXN / mes</td></tr>
+          <tr><td><b>Fases 6 a 8</b></td><td>Aplicación de residentes en operación</td><td class="num">$5,000 MXN / mes</td></tr>
+          <tr><td><b>Cambios y mejoras</b></td><td>Ajustes fuera del alcance de cada fase</td><td class="num">$850 MXN / hora</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Costos a cargo del cliente</h2>
+    <p class="sub">Se contratan directamente a nombre de la desarrolladora y no se facturan a través del proveedor.</p>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Desde</th><th>Estimado</th></tr></thead>
+        <tbody>
+          <tr><td>Servidor y base de datos</td><td>Fase 1</td><td class="num">$600 – $2,000 MXN / mes</td></tr>
+          <tr><td>WhatsApp Business e inteligencia artificial del asistente</td><td>Fase 3</td><td class="num">$400 – $1,500 MXN / mes, según conversaciones</td></tr>
+          <tr><td>Dominio</td><td>Fase 1</td><td class="num">$400 MXN / año</td></tr>
+          <tr><td>Cuenta Apple Developer</td><td>Fase 8</td><td class="num">$1,900 MXN / año</td></tr>
+          <tr><td>Cuenta Google Play</td><td>Fase 8</td><td class="num">$500 MXN, pago único</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Qué se entrega en cada fase</h2>
+    <ul class="lista">
+      <li><span><b>La herramienta funcionando</b> con la información real del proyecto cargada.</span></li>
+      <li><span><b>Capacitación</b> al equipo que la va a usar.</span></li>
+      <li><span><b>Código fuente y accesos</b> al liquidar la fase.</span></li>
+      <li><span><b>Garantía de 60 días</b> sobre errores de lo entregado.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Condiciones</h2>
+    <ol class="cond">
+      <li>Cada fase es un contrato independiente. Contratar una no obliga a contratar la siguiente.</li>
+      <li>El alcance de cada fase es el descrito. Lo adicional se cotiza antes de ejecutarse.</li>
+      <li>Se contemplan dos rondas de ajustes por fase. Las siguientes se facturan por hora.</li>
+      <li>El cliente proporciona la información del proyecto: unidades, precios, planos y fotografías de obra.</li>
+      <li>Los retrasos en aprobaciones o en la entrega de información recorren el plazo comprometido.</li>
+      <li>La aprobación en App Store y Google Play depende de cada tienda y no condiciona el pago final de la fase 8.</li>
+      <li>Los precios de las fases 6 a 8 se respetan si se contratan dentro de los 18 meses siguientes a esta propuesta.</li>
+    </ol>
+  </section>
+
+  <div class="firma">
+    <div><div class="linea-firma"></div><small>Por el cliente · Nombre y firma</small></div>
+    <div><div class="linea-firma"></div><small>Mauricio Varela · Proveedor</small></div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Torre Vivant Landing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap">
+<style>
+/* Landing de preventa. Bosque + hueso + un solo acento ambar. Esquinas rectas en todo. Sans display (Geist). */
+:root{
+  --fondo:#f2f4ee; --fondo2:#e7ebe1; --tinta:#11241c; --tinta2:#4b5d54; --linea:#cfd6c9;
+  --acento:#c9791a; --vidrio:#b9c4b8; --muro:#dce2d6; --sobre-tinta:#f2f4ee; --error:#a63a22;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fondo:#0d1713; --fondo2:#13211b; --tinta:#e9eee6; --tinta2:#9db0a5; --linea:#24362d;
+  --acento:#e9a23f; --vidrio:#2a3d33; --muro:#18281f; --sobre-tinta:#0d1713; --error:#f08a6e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fondo:#0d1713; --fondo2:#13211b; --tinta:#e9eee6; --tinta2:#9db0a5; --linea:#24362d;
+  --acento:#e9a23f; --vidrio:#2a3d33; --muro:#18281f; --sobre-tinta:#0d1713; --error:#f08a6e; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--tinta);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding-left:20px;padding-right:20px}
+h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.035em;text-wrap:balance}
+h1{font-size:clamp(40px,5.6vw,72px);line-height:1}
+h2{font-size:clamp(30px,4.4vw,54px);line-height:1.04}
+h3{font-size:24px;letter-spacing:-.02em;line-height:1.15}
+p{margin:0}
+.sub{color:var(--tinta2);max-width:52ch}
+.num{font-variant-numeric:tabular-nums}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
+.marca{font-weight:600;letter-spacing:.14em;font-size:14px}
+.nav-links{display:none;gap:30px;font-size:14.5px}
+.nav-links a{color:var(--tinta2);text-decoration:none}
+.nav-links a:hover{color:var(--tinta)}
+@media(min-width:860px){.nav-links{display:flex}}
+
+.btn{display:inline-block;font:inherit;font-weight:500;font-size:15px;white-space:nowrap;border:1px solid var(--tinta);padding:13px 22px;background:var(--tinta);color:var(--sobre-tinta);cursor:pointer;text-decoration:none;transition:transform .18s cubic-bezier(.16,1,.3,1),opacity .18s}
+.btn:hover{opacity:.88}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn.sec{background:transparent;color:var(--tinta)}
+.btn.chico{padding:9px 16px;font-size:14px}
+a:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acento);outline-offset:3px}
+
+/* espacio de fotografia */
+.foto{margin:0;background:var(--fondo2);border:1px solid var(--linea);display:grid;place-items:center;text-align:center;color:var(--tinta2);font-size:13px;padding:18px;overflow:hidden}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto.llena{padding:0;border:0}
+
+/* hero: texto a la izquierda, render a la derecha */
+.hero{display:grid;gap:32px;padding-block:28px 64px;align-items:end}
+@media(min-width:860px){.hero{grid-template-columns:1.1fr .9fr;gap:56px;padding-block:44px 88px}}
+.hero>*{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--acento);margin-bottom:18px}
+.hero .sub{font-size:18px;margin:22px 0 30px;max-width:44ch}
+.acciones{display:flex;gap:12px;flex-wrap:wrap}
+.hero .foto{aspect-ratio:4/5;max-height:76dvh;width:100%}
+
+/* cifras: fila abierta, sin tarjetas */
+.cifras{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 20px;padding-block:36px;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+@media(min-width:860px){.cifras{grid-template-columns:repeat(4,1fr)}}
+.cifras b{display:block;font-size:clamp(30px,3.6vw,46px);font-weight:400;letter-spacing:-.04em;line-height:1.1}
+.cifras span{font-size:13.5px;color:var(--tinta2)}
+
+section{padding-block:72px}
+@media(min-width:860px){section{padding-block:112px}}
+.cab{display:grid;gap:14px;margin-bottom:40px}
+
+/* tipologias: una celda grande con foto y dos apiladas */
+.tipos{display:grid;gap:16px}
+@media(min-width:860px){.tipos{grid-template-columns:1.45fr 1fr;grid-template-rows:1fr 1fr}.tipo.grande{grid-row:1/3}}
+.tipo{border:1px solid var(--linea);padding:26px;display:grid;gap:6px;align-content:end;min-width:0}
+.tipo.grande{padding:0;align-content:stretch;grid-template-rows:1fr auto}
+.tipo.grande .foto{aspect-ratio:4/3;border:0;border-bottom:1px solid var(--linea)}
+.tipo.grande .txt{padding:26px;display:grid;gap:6px}
+.tipo.tinte{background:var(--fondo2)}
+.tipo.oscura{background:var(--tinta);color:var(--sobre-tinta);border-color:var(--tinta)}
+.tipo.oscura .m2,.tipo.oscura .quedan{color:inherit;opacity:.78}
+.m2{font-size:14.5px;color:var(--tinta2)}
+.desde{font-size:19px;font-weight:500;margin-top:10px}
+.quedan{font-size:13.5px;color:var(--tinta2)}
+
+/* disponibilidad: fachada con una ventana por departamento */
+.dispo{display:grid;gap:40px;align-items:center}
+@media(min-width:860px){.dispo{grid-template-columns:minmax(0,340px) 1fr;gap:88px}}
+.fachada{background:var(--muro);padding:12px 12px 0;display:grid;gap:6px}
+.nivel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.v{aspect-ratio:1.45;background:var(--vidrio)}
+.v.on{background:var(--acento)}
+.basamento{height:28px;background:var(--tinta)}
+.conteo{font-size:clamp(64px,10vw,128px);font-weight:300;letter-spacing:-.06em;line-height:.95;margin:18px 0 6px}
+.leyenda{display:flex;gap:22px;flex-wrap:wrap;font-size:13.5px;color:var(--tinta2);margin-top:26px}
+.leyenda i{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px}
+
+/* amenidades: foto a todo lo ancho y dos grupos debajo */
+.amen-foto{aspect-ratio:16/9;max-height:560px;width:100%;margin-bottom:40px}
+.grupos{display:grid;gap:36px}
+@media(min-width:860px){.grupos{grid-template-columns:1fr 1fr;gap:72px}}
+.grupo h3{padding-bottom:14px;border-bottom:1px solid var(--linea);margin-bottom:6px}
+.grupo dl{margin:0;display:grid;gap:18px;padding-top:16px}
+.grupo dt{font-weight:500}
+.grupo dd{margin:2px 0 0;color:var(--tinta2);font-size:14.5px}
+
+/* pagos: el ancho de cada columna es su proporcion */
+.pagos{display:grid;gap:14px}
+@media(min-width:860px){.pagos{grid-template-columns:1.6fr 3fr 6fr}}
+.pago{border-top:2px solid var(--tinta);padding-top:16px;min-width:0}
+.pago b{display:block;font-size:clamp(44px,6vw,84px);font-weight:300;letter-spacing:-.05em;line-height:1}
+.pago span{display:block;margin-top:10px;color:var(--tinta2);font-size:15px;max-width:30ch}
+
+/* contacto: titular arriba, formulario en fila */
+.contacto{background:var(--fondo2);padding:36px 24px}
+@media(min-width:860px){.contacto{padding:64px}}
+form{display:grid;gap:16px;margin-top:32px}
+@media(min-width:860px){form{grid-template-columns:1fr 1fr 1fr auto;align-items:start}}
+.campo{display:grid;gap:8px;min-width:0}
+label{font-size:13.5px;font-weight:500}
+input,select{font:inherit;padding:13px 12px;border:1px solid var(--tinta2);border-radius:0;background:var(--fondo);color:var(--tinta);width:100%}
+.ayuda{font-size:12.5px;color:var(--tinta2);min-height:1.2em}
+.ayuda.err{color:var(--error);font-weight:500}
+form .btn{margin-top:29px}
+@media(max-width:859px){form .btn{margin-top:0}}
+.listo{margin-top:32px;border-left:2px solid var(--acento);padding:4px 0 4px 18px;max-width:60ch}
+footer{padding-block:32px 48px;font-size:13px;color:var(--tinta2);max-width:80ch}
+
+/* movimiento: entrada del hero (jerarquia) y encendido de ventanas (cuenta lo vendido) */
+@media (prefers-reduced-motion: no-preference){
+  .sube{animation:sube .8s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*90ms)}
+  @keyframes sube{from{opacity:0;transform:translateY(18px)}}
+  .fachada.viva .v.on{animation:enciende .5s ease-out both;animation-delay:calc(var(--k)*45ms)}
+  @keyframes enciende{from{background:var(--vidrio)}}
+}
+
+/* chat flotante: mismo asistente que WhatsApp, con los colores de la página */
+.chat-abrir{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--tinta);color:var(--sobre-tinta);border:0;padding:14px 20px;font:inherit;font-weight:500;font-size:15px;cursor:pointer;box-shadow:0 12px 32px rgba(17,36,28,.28)}
+.chat-abrir:active{transform:translateY(1px)}
+.chat-caja{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:31;width:min(400px,calc(100vw - 40px));height:min(620px,calc(100dvh - 40px));background:var(--fondo);border:1px solid var(--linea);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(17,36,28,.3)}
+.chat-caja .barra{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--linea);background:var(--fondo2)}
+.chat-caja .nombre{font-weight:500;font-size:14.5px;flex:1}
+.chat-caja .estado{font-size:12px;color:var(--tinta2)}
+.chat-caja .cerrar{background:none;border:1px solid var(--linea);color:var(--tinta2);padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.chat-caja .chat{flex:1;overflow-y:auto;padding:14px 12px 6px}
+.chat-caja{--c-bot:var(--fondo2);--c-yo:var(--tinta);--c-yo-txt:var(--sobre-tinta);--c-txt:var(--tinta);--c-mut:var(--tinta2);--c-card:var(--fondo2);--c-linea:var(--linea);--c-linea2:var(--tinta2);--c-acento:var(--acento);--c-sobre-acento:#11241c;--c-ok:var(--acento)}
+.chat-caja .burbuja,.chat-caja .tarjeta,.chat-caja .opciones button,.chat-caja .captura input,.chat-caja .captura button{border-radius:0}
+.fila{display:flex;margin-bottom:8px;animation:entra .22s ease-out}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion: reduce){.fila{animation:none}}
+.fila.yo{justify-content:flex-end}
+.burbuja{max-width:84%;padding:8px 11px 6px;border-radius:12px;font-size:14.2px;line-height:1.45;background:var(--c-bot);color:var(--c-txt);position:relative;white-space:pre-wrap;word-wrap:break-word}
+.fila.yo .burbuja{background:var(--c-yo);color:var(--c-yo-txt)}
+.burbuja .hora{font-size:10.5px;opacity:.6;float:right;margin:6px 0 -2px 8px}
+.burbuja b{color:var(--c-acento)}
+.fila.yo .burbuja b{color:inherit}
+.escribiendo{display:flex;gap:4px;padding:12px 14px}
+.escribiendo i{width:7px;height:7px;border-radius:50%;background:var(--c-mut);animation:pulso 1.1s infinite}
+.escribiendo i:nth-child(2){animation-delay:.18s}.escribiendo i:nth-child(3){animation-delay:.36s}
+@keyframes pulso{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.tarjeta{background:var(--c-card);border:1px solid var(--c-linea);border-left:3px solid var(--c-acento);border-radius:10px;padding:12px 13px;margin:2px 0 4px;font-size:13.5px;max-width:90%;color:var(--c-txt)}
+.tarjeta h4{margin:0 0 9px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--c-acento)}
+.tarjeta .ren{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed var(--c-linea);font-variant-numeric:tabular-nums}
+.tarjeta .ren:last-child{border-bottom:none}
+.tarjeta .ren span:first-child{color:var(--c-mut)}
+.tarjeta .ren span:last-child{font-weight:600;text-align:right}
+.tarjeta .ren.fuerte span:last-child{color:var(--c-ok)}
+.opciones{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;padding:4px 2px 12px}
+.opciones button{background:transparent;border:1px solid var(--c-linea2);color:var(--c-txt);border-radius:18px;padding:8px 13px;font-size:13px;cursor:pointer;font:inherit;transition:.15s}
+.opciones button:hover{background:var(--c-card)}
+.opciones button.dorado{border-color:var(--c-acento);color:var(--c-acento)}
+.captura{display:flex;gap:8px;justify-content:flex-end;padding:4px 2px 12px}
+.captura input{font:inherit;font-size:14px;padding:9px 12px;border-radius:18px;border:1px solid var(--c-linea2);background:var(--c-card);color:var(--c-txt);width:min(240px,70%)}
+.captura button{font:inherit;font-size:13px;padding:8px 14px;border-radius:18px;border:0;background:var(--c-acento);color:var(--c-sobre-acento);cursor:pointer}
+</style>
+
+<div class="wrap">
+  <nav class="nav">
+    <span class="marca">TORRE VIVANT</span>
+    <div class="nav-links"><a href="#departamentos">Departamentos</a><a href="#amenidades">Amenidades</a><a href="#pagos">Plan de pagos</a></div>
+    <a class="btn chico" href="#contacto">Agendar visita</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow sube">Preventa abierta</p>
+      <h1 class="sube" style="--i:1">Doce niveles frente al parque.</h1>
+      <p class="sub sube" style="--i:2">48 departamentos de una a tres recámaras con roof garden, alberca y acceso controlado. Entrega en marzo de 2028.</p>
+      <div class="acciones sube" style="--i:3"><a class="btn" href="#contacto">Agendar visita</a><a class="btn sec" href="#departamentos">Ver departamentos</a></div>
+    </div>
+    <!-- IMAGEN: render exterior de la torre, 4:5, 1600x2000 -->
+    <figure class="foto sube" style="--i:2" id="img-hero">Aquí va el render exterior de la torre</figure>
+  </header>
+
+  <div class="cifras">
+    <div><b class="num">$3.1 M</b><span>Precio desde, en pesos</span></div>
+    <div><b class="num">58 a 122 m²</b><span>Superficie interior</span></div>
+    <div><b class="num">10%</b><span>Enganche a la firma</span></div>
+    <div><b class="num">Marzo 2028</b><span>Entrega estimada</span></div>
+  </div>
+
+  <section id="departamentos">
+    <div class="cab"><h2>Tres maneras de vivir aquí</h2><p class="sub">Cuatro departamentos por nivel, cada uno con una orientación distinta. El precio sube con la altura.</p></div>
+    <div class="tipos">
+      <article class="tipo grande">
+        <!-- IMAGEN: interior de sala comedor con ventanal, 4:3, 1600x1200 -->
+        <figure class="foto" id="img-interior">Aquí va la fotografía del departamento muestra</figure>
+        <div class="txt"><h3>Dos recámaras</h3><p class="m2">84 m², 2 baños y 2 cajones</p><p class="desde num">Desde $4,450,000</p><p class="quedan">9 disponibles</p></div>
+      </article>
+      <article class="tipo tinte"><h3>Una recámara</h3><p class="m2">58 m², 1 baño y 1 cajón</p><p class="desde num">Desde $3,100,000</p><p class="quedan">6 disponibles</p></article>
+      <article class="tipo oscura"><h3>Tres recámaras</h3><p class="m2">122 m², 2.5 baños, 2 cajones y bodega</p><p class="desde num">Desde $6,430,000</p><p class="quedan">5 disponibles</p></article>
+    </div>
+  </section>
+
+  <section class="dispo" style="padding-top:0">
+    <div aria-hidden="true"><div class="fachada" id="fachada"></div><div class="basamento"></div></div>
+    <div>
+      <h2>Lo que queda, piso por piso</h2>
+      <p class="conteo num" id="disp">20</p>
+      <p class="sub">departamentos disponibles de 48. Cada ventana es un departamento y se enciende cuando se aparta o se vende.</p>
+      <div class="leyenda"><span><i style="background:var(--acento)"></i>Colocado</span><span><i style="background:var(--vidrio)"></i>Disponible</span></div>
+    </div>
+  </section>
+
+  <section id="amenidades" style="padding-top:0">
+    <div class="cab"><h2>El edificio también se habita</h2></div>
+    <!-- IMAGEN: roof garden con alberca al atardecer, 16:9, 2000x1125 -->
+    <figure class="foto amen-foto" id="img-roof">Aquí va el render del roof garden</figure>
+    <div class="grupos">
+      <div class="grupo"><h3>Para convivir</h3><dl>
+        <div><dt>Roof garden</dt><dd>Terraza en la azotea para 40 personas</dd></div>
+        <div><dt>Alberca</dt><dd>Carril de nado y asoleadero</dd></div>
+        <div><dt>Salón de eventos</dt><dd>Hasta 80 invitados, con cocina de apoyo</dd></div>
+      </dl></div>
+      <div class="grupo"><h3>Para el día a día</h3><dl>
+        <div><dt>Gimnasio</dt><dd>Abierto de 5:00 a 23:00</dd></div>
+        <div><dt>Sala de juntas</dt><dd>Para trabajar sin salir del edificio</dd></div>
+        <div><dt>Acceso controlado</dt><dd>Caseta las 24 horas y pases de visita con código QR</dd></div>
+      </dl></div>
+    </div>
+  </section>
+
+  <section id="pagos" style="padding-top:0">
+    <div class="cab"><h2>Se paga mientras se construye</h2></div>
+    <div class="pagos">
+      <div class="pago"><b class="num">10%</b><span>Enganche al firmar el contrato</span></div>
+      <div class="pago"><b class="num">30%</b><span>En 18 mensualidades durante la obra</span></div>
+      <div class="pago"><b class="num">60%</b><span>Contra entrega, con crédito hipotecario o recursos propios</span></div>
+    </div>
+  </section>
+
+  <section id="contacto" style="padding-top:0">
+    <div class="contacto">
+      <h2>Conoce el departamento muestra</h2>
+      <p class="sub" style="margin-top:14px">Un asesor te confirma día y hora. La caseta de ventas abre todos los días de 10:00 a 19:00.</p>
+      <form id="f" novalidate>
+        <div class="campo"><label for="l_nombre">Nombre</label><input id="l_nombre" autocomplete="name"><span class="ayuda" id="e_nombre"></span></div>
+        <div class="campo"><label for="l_tel">Teléfono</label><input id="l_tel" inputmode="tel" autocomplete="tel"><span class="ayuda" id="e_tel">10 dígitos</span></div>
+        <div class="campo"><label for="l_tipo">Me interesa</label><select id="l_tipo"><option>Una recámara</option><option selected>Dos recámaras</option><option>Tres recámaras</option></select><span class="ayuda"></span></div>
+        <button class="btn" type="submit">Agendar visita</button>
+      </form>
+      <p class="listo" id="ok" hidden></p>
+    </div>
+  </section>
+
+  
+<button class="chat-abrir" id="chatAbrir" type="button" aria-expanded="false" aria-controls="chatCaja">Pregúntale a Valeria</button>
+<div class="chat-caja" id="chatCaja" hidden role="dialog" aria-label="Chat con asesora">
+  <div class="barra"><div><div class="nombre">Valeria, asesora</div><div class="estado">Responde al momento</div></div><button class="cerrar" id="chatCerrar" type="button">Cerrar</button></div>
+  <div class="chat" id="chatLanding"></div>
+</div>
+<script>
+/* Conversación guiada del asistente de ventas de Torre Vivant. Sin API: las respuestas salen de los datos del proyecto. */
+const MXN=n=>'$'+Math.round(n).toLocaleString('es-MX');
+const TIPOS={
+  una:{n:'Una recámara',m2:58,desde:3100000,disp:6,renta:15500},
+  dos:{n:'Dos recámaras',m2:84,desde:4450000,disp:9,renta:22000},
+  tres:{n:'Tres recámaras',m2:122,desde:6430000,disp:5,renta:31000}
+};
+function crearChat(el,opts){
+  const hora=()=>new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  const abajo=()=>{el.scrollTop=el.scrollHeight};
+  let lead={};
+  function burbuja(t,mio){const f=document.createElement('div');f.className='fila'+(mio?' yo':'');f.innerHTML=`<div class="burbuja">${t}<span class="hora">${hora()}</span></div>`;el.appendChild(f);abajo()}
+  function tarjeta(tit,filas){const f=document.createElement('div');f.className='fila';f.innerHTML=`<div class="tarjeta"><h4>${tit}</h4>`+filas.map(([a,b,fu])=>`<div class="ren${fu?' fuerte':''}"><span>${a}</span><span>${b}</span></div>`).join('')+'</div>';el.appendChild(f);abajo()}
+  function opciones(lista){const d=document.createElement('div');d.className='opciones';lista.forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.t;if(o.d)b.className='dorado';b.onclick=()=>{d.remove();burbuja(o.t,true);setTimeout(()=>ir(o.ir),700)};d.appendChild(b)});el.appendChild(d);abajo()}
+  function captura(campo,ph,luego){const d=document.createElement('form');d.className='captura';d.innerHTML=`<input aria-label="${ph}" placeholder="${ph}" ${campo==='tel'?'inputmode="tel"':''}><button type="submit">Enviar</button>`;d.onsubmit=e=>{e.preventDefault();const v=d.querySelector('input').value.trim();if(!v)return;lead[campo]=v;d.remove();burbuja(v,true);setTimeout(()=>ir(luego),700)};el.appendChild(d);d.querySelector('input').focus();abajo()}
+  function escribiendo(ms,luego){const f=document.createElement('div');f.className='fila';f.innerHTML='<div class="burbuja escribiendo"><i></i><i></i><i></i></div>';el.appendChild(f);abajo();setTimeout(()=>{f.remove();luego()},ms)}
+  function secuencia(pasos){let i=0;(function sig(){if(i>=pasos.length)return;const p=pasos[i++];if(p.tipo==='ops')return opciones(p.lista);if(p.tipo==='cap')return captura(p.campo,p.ph,p.luego);const tec=Math.min(2200,500+(p.largo||40)*20),resp=Math.min(1200,350+(p.largo||40)*8);escribiendo(tec,()=>{p.hacer();setTimeout(sig,resp)})})()}
+  const txt=t=>({hacer:()=>burbuja(t),largo:t.replace(/<[^>]+>/g,'').length});
+  const card=(t,f)=>({hacer:()=>tarjeta(t,f),largo:50});
+  const ops=lista=>({tipo:'ops',lista});
+  const cap=(campo,ph,luego)=>({tipo:'cap',campo,ph,luego});
+  const menuFinal=[{t:'Agendar visita',ir:'visita',d:true},{t:'Ver precios',ir:'precios'},{t:'Plan de pagos',ir:'pagos'}];
+  const F={
+    inicio:()=>secuencia([
+      txt(`Hola, soy <b>Valeria</b>, asesora de ${opts.marca||'Torre Vivant'}.`),
+      txt('Para orientarte bien, cuéntame: ¿qué estás buscando?'),
+      ops([{t:'Quiero vivir ahí',ir:'vivir'},{t:'Me interesa como inversión',ir:'invertir',d:true},{t:'Ya compré, tengo dudas',ir:'cliente'}])
+    ]),
+    vivir:()=>secuencia([
+      txt('Qué bien. Son 48 departamentos en 12 niveles, frente al parque, con entrega en <b>marzo de 2028</b>.'),
+      txt('Quedan <b>20 disponibles</b>. ¿Qué te gustaría ver primero?'),
+      ops([{t:'Precios y tipos',ir:'precios'},{t:'Plan de pagos',ir:'pagos'},{t:'Qué tiene el edificio',ir:'amenidades'},{t:'Agendar visita',ir:'visita',d:true}])
+    ]),
+    precios:()=>secuencia([
+      txt('Hay tres tipos. El precio sube con el nivel; estos son los de arranque:'),
+      card('Departamentos disponibles',Object.values(TIPOS).map(t=>[t.n+' · '+t.m2+' m²','desde '+MXN(t.desde)])),
+      txt('La de dos recámaras es la que más se mueve: quedan 9.'),
+      ops([{t:'Plan de pagos',ir:'pagos'},{t:'Qué tiene el edificio',ir:'amenidades'},{t:'Agendar visita',ir:'visita',d:true}])
+    ]),
+    pagos:()=>secuencia([
+      txt('Se paga mientras se construye, sin intereses:'),
+      card('Plan de pagos',[['Enganche a la firma','10%'],['Durante la obra','30% en 18 mensualidades'],['Contra entrega','60%, con crédito o recursos propios']]),
+      txt('Por ejemplo, un departamento de dos recámaras de '+MXN(TIPOS.dos.desde)+':'),
+      card('Ejemplo dos recámaras',[['Enganche',MXN(TIPOS.dos.desde*.1)],['Mensualidad',MXN(TIPOS.dos.desde*.3/18),true],['Al entregar',MXN(TIPOS.dos.desde*.6)]]),
+      ops([{t:'Agendar visita',ir:'visita',d:true},{t:'Ver precios',ir:'precios'},{t:'Qué tiene el edificio',ir:'amenidades'}])
+    ]),
+    amenidades:()=>secuencia([
+      card('Lo que comparte el edificio',[['Roof garden','Terraza para 40 personas'],['Alberca','Carril de nado y asoleadero'],['Gimnasio','De 5:00 a 23:00'],['Salón de eventos','Hasta 80 invitados'],['Acceso','Caseta 24 h y visitas con código QR']]),
+      txt('Y desde el día de la entrega hay una app para reservar amenidades, dar acceso a visitas y reportar fallas.'),
+      ops(menuFinal)
+    ]),
+    invertir:()=>secuencia([
+      txt('Perfecto, vamos a los números.'),
+      txt('La zona tiene demanda de renta constante por el parque y las oficinas cercanas. ¿Qué tipo quieres analizar?'),
+      ops([{t:'Una recámara',ir:'calc:una'},{t:'Dos recámaras',ir:'calc:dos',d:true},{t:'Tres recámaras',ir:'calc:tres'}])
+    ]),
+    calc:k=>{const t=TIPOS[k];const anual=t.renta*12;secuencia([
+      txt(`<b>${t.n}</b>, ${t.m2} m². Estimación con renta de mercado de la zona:`),
+      card('Rendimiento estimado',[['Precio desde',MXN(t.desde)],['Renta mensual estimada',MXN(t.renta)],['Renta anual',MXN(anual)],['Rendimiento bruto',(anual/t.desde*100).toFixed(1)+'%',true]]),
+      txt('Además de la renta, en preventa compras por debajo del precio de entrega. Puedo mandarte el comparativo por escrito.'),
+      ops([{t:'Sí, mándamelo',ir:'visita',d:true},{t:'Plan de pagos',ir:'pagos'},{t:'Otro tipo',ir:'invertir'}])
+    ])},
+    cliente:()=>secuencia([
+      txt('Claro. ¿En qué te ayudo?'),
+      ops([{t:'Cómo va la obra',ir:'obra'},{t:'Mi siguiente pago',ir:'pago'},{t:'Mis documentos',ir:'docs'}])
+    ]),
+    obra:()=>secuencia([
+      card('Avance de obra',[['Estructura','100%'],['Albañilería','72%'],['Instalaciones','41%'],['Avance general','54%',true]]),
+      txt('Las fotos de cada semana las tienes en tu portal de comprador. ¿Te mando el acceso?'),
+      ops([{t:'Sí, mándamelo',ir:'portal',d:true},{t:'Mi siguiente pago',ir:'pago'}])
+    ]),
+    pago:()=>secuencia([
+      txt('Tu siguiente mensualidad vence el <b>15 de octubre</b>. En el portal puedes pagar con tarjeta o subir tu comprobante.'),
+      ops([{t:'Abrir mi portal',ir:'portal',d:true},{t:'Cómo va la obra',ir:'obra'}])
+    ]),
+    docs:()=>secuencia([
+      txt('Tu contrato, planos y recibos están en tu portal, en la sección Documentos.'),
+      ops([{t:'Abrir mi portal',ir:'portal',d:true}])
+    ]),
+    portal:()=>secuencia([
+      txt('Te envié el enlace a tu portal por este medio. Cualquier otra duda, aquí estoy.'),
+      ops([{t:'Volver al inicio',ir:'inicio'}])
+    ]),
+    visita:()=>secuencia([
+      txt('Con gusto. La caseta de ventas abre todos los días de 10:00 a 19:00. ¿Cómo te llamas?'),
+      cap('nombre','Tu nombre','tel')
+    ]),
+    tel:()=>secuencia([
+      txt(`Gracias, ${lead.nombre.split(' ')[0]}. ¿A qué número te confirmo?`),
+      cap('tel','Tu teléfono','listo')
+    ]),
+    listo:()=>secuencia([
+      txt('Listo. Un asesor te escribe hoy mismo para confirmar día y hora.'),
+      txt(opts.notaLead||'En la versión contratada, este contacto entra directo al seguimiento comercial con asesor asignado.'),
+      ops([{t:'Ver precios',ir:'precios'},{t:'Volver al inicio',ir:'inicio'}])
+    ])
+  };
+  function ir(c){const [k,a]=c.split(':');(F[k]||F.inicio)(a)}
+  function reiniciar(){el.innerHTML='';lead={};ir('inicio')}
+  reiniciar();
+  return {reiniciar};
+}
+
+let bot=null;
+const abrir=document.getElementById('chatAbrir'),caja=document.getElementById('chatCaja');
+abrir.addEventListener('click',()=>{caja.hidden=false;abrir.hidden=true;abrir.setAttribute('aria-expanded','true');if(!bot)bot=crearChat(document.getElementById('chatLanding'),{notaLead:'En la versión contratada este contacto entra al seguimiento comercial y el asesor lo recibe en su teléfono.'})});
+document.getElementById('chatCerrar').addEventListener('click',()=>{caja.hidden=true;abrir.hidden=false;abrir.setAttribute('aria-expanded','false')});
+</script>
+
+<footer>Página de demostración. Nombres, precios, superficies y fechas son de ejemplo, y ni el formulario ni el chat envían o guardan datos.</footer>
+</div>
+
+<script>
+// Fachada: 12 niveles por 4 departamentos, misma regla de inventario que el selector de unidades
+const f=document.getElementById('fachada');let on=0,k=0;
+for(let p=12;p>=1;p--){
+  const n=document.createElement('div');n.className='nivel';
+  for(let i=1;i<=4;i++){
+    const r=(p*7+i*13)%10, libre=p>=10?r<6:r>=6;
+    const v=document.createElement('div');v.className='v'+(libre?'':' on');
+    if(!libre){on++;v.style.setProperty('--k',k++)}
+    n.appendChild(v);
+  }
+  f.appendChild(n);
+}
+document.getElementById('disp').textContent=48-on;
+// las ventanas se encienden cuando la fachada entra a la vista
+if('IntersectionObserver' in window){
+  new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){f.classList.add('viva');o.disconnect()}},{threshold:.3}).observe(f);
+}
+document.getElementById('f').addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=document.getElementById('l_nombre').value.trim(), t=document.getElementById('l_tel').value.replace(/\D/g,'');
+  const en=document.getElementById('e_nombre'), et=document.getElementById('e_tel');
+  en.textContent=n?'':'Escribe tu nombre'; en.classList.toggle('err',!n);
+  const telOk=t.length===10;
+  et.textContent=telOk?'10 dígitos':'El teléfono debe tener 10 dígitos'; et.classList.toggle('err',!telOk);
+  if(!n||!telOk)return;
+  e.target.hidden=true;
+  const ok=document.getElementById('ok');
+  ok.textContent='Gracias, '+n.split(' ')[0]+'. En la versión contratada este registro llega al equipo de ventas al instante y queda asignado a un asesor.';
+  ok.hidden=false;
+});
+</script>
+
+</body>
+</html>
