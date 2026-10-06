@@ -112,15 +112,15 @@ section{padding-block:72px}
 /* contacto: titular arriba, formulario en fila */
 .contacto{background:var(--fondo2);padding:36px 24px}
 @media(min-width:860px){.contacto{padding:64px}}
-form{display:grid;gap:16px;margin-top:32px}
-@media(min-width:860px){form{grid-template-columns:1fr 1fr 1fr auto;align-items:start}}
+#f{display:grid;gap:16px;margin-top:32px}
+@media(min-width:860px){#f{grid-template-columns:1fr 1fr 1fr auto;align-items:start}}
 .campo{display:grid;gap:8px;min-width:0}
 label{font-size:13.5px;font-weight:500}
-input,select{font:inherit;padding:13px 12px;border:1px solid var(--tinta2);border-radius:0;background:var(--fondo);color:var(--tinta);width:100%}
+#f input,#f select{font:inherit;padding:13px 12px;border:1px solid var(--tinta2);border-radius:0;background:var(--fondo);color:var(--tinta);width:100%}
 .ayuda{font-size:12.5px;color:var(--tinta2);min-height:1.2em}
 .ayuda.err{color:var(--error);font-weight:500}
-form .btn{margin-top:29px}
-@media(max-width:859px){form .btn{margin-top:0}}
+#f .btn{margin-top:29px}
+@media(max-width:859px){#f .btn{margin-top:0}}
 .listo{margin-top:32px;border-left:2px solid var(--acento);padding:4px 0 4px 18px;max-width:60ch}
 footer{padding-block:32px 48px;font-size:13px;color:var(--tinta2);max-width:80ch}
 
@@ -284,7 +284,7 @@ function crearChat(el,opts){
   function opciones(lista){const d=document.createElement('div');d.className='opciones';lista.forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.t;if(o.d)b.className='dorado';b.onclick=()=>{d.remove();burbuja(o.t,true);setTimeout(()=>ir(o.ir),700)};d.appendChild(b)});el.appendChild(d);abajo()}
   function captura(campo,ph,luego){const d=document.createElement('form');d.className='captura';d.innerHTML=`<input aria-label="${ph}" placeholder="${ph}" ${campo==='tel'?'inputmode="tel"':''}><button type="submit">Enviar</button>`;d.onsubmit=e=>{e.preventDefault();const v=d.querySelector('input').value.trim();if(!v)return;lead[campo]=v;d.remove();burbuja(v,true);setTimeout(()=>ir(luego),700)};el.appendChild(d);d.querySelector('input').focus();abajo()}
   function escribiendo(ms,luego){const f=document.createElement('div');f.className='fila';f.innerHTML='<div class="burbuja escribiendo"><i></i><i></i><i></i></div>';el.appendChild(f);abajo();setTimeout(()=>{f.remove();luego()},ms)}
-  function secuencia(pasos){let i=0;(function sig(){if(i>=pasos.length)return;const p=pasos[i++];if(p.tipo==='ops')return opciones(p.lista);if(p.tipo==='cap')return captura(p.campo,p.ph,p.luego);const tec=Math.min(2200,500+(p.largo||40)*20),resp=Math.min(1200,350+(p.largo||40)*8);escribiendo(tec,()=>{p.hacer();setTimeout(sig,resp)})})()}
+  function secuencia(pasos){let i=0;(function sig(){if(i>=pasos.length)return;const p=pasos[i++];if(p.tipo==='ops')return opciones(p.lista);if(p.tipo==='cap')return captura(p.campo,p.ph,p.luego);const tec=Math.min(900,250+(p.largo||40)*7),resp=Math.min(350,120+(p.largo||40)*2);escribiendo(tec,()=>{p.hacer();setTimeout(sig,resp)})})()}
   const txt=t=>({hacer:()=>burbuja(t),largo:t.replace(/<[^>]+>/g,'').length});
   const card=(t,f)=>({hacer:()=>tarjeta(t,f),largo:50});
   const ops=lista=>({tipo:'ops',lista});
