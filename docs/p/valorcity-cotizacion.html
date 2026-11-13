@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotización App ValorCity</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+/* Cotización: columna única de lectura, tabla de alcance, bloque de inversión destacado, condiciones al pie */
+:root{
+  --papel:#f7f6f2; --panel:#ffffff; --tinta:#1b2027; --tinta2:#5b6572; --tinta3:#8b94a0;
+  --linea:#dedad2; --laton:#8a6a2f; --laton-bg:#f2ead9;
+  --ok:#2f6b4f; --ok-bg:#e6efe9;
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --texto:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding-block:48px 64px;padding-left:20px;padding-right:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--laton);font-weight:600}
+h1{font-family:var(--display);font-size:clamp(30px,6vw,42px);font-weight:500;line-height:1.15;margin-top:10px;letter-spacing:-.01em}
+h2{font-family:var(--display);font-size:clamp(21px,4vw,26px);font-weight:500;margin-bottom:6px}
+h3{font-size:15px;font-weight:600}
+p{margin:0 0 14px}
+.sub{color:var(--tinta2)}
+section{margin-top:48px}
+.rule{height:1px;background:var(--linea);border:0;margin:0}
+
+/* encabezado */
+.meta{display:grid;gap:14px 28px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:26px;padding-top:22px;border-top:2px solid var(--tinta)}
+.meta div{min-width:0}
+.meta dt{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta3);font-weight:600;margin-bottom:3px}
+.meta dd{margin:0;font-size:14.5px;font-weight:500}
+
+/* alcance */
+.mod{display:grid;gap:0;border:1px solid var(--linea);border-radius:4px;overflow:hidden;background:var(--panel)}
+.mod>div{display:grid;grid-template-columns:150px 1fr;gap:4px 20px;padding:16px 18px;border-bottom:1px solid var(--linea)}
+.mod>div:last-child{border-bottom:0}
+.mod b{font-size:14px}
+.mod span{color:var(--tinta2);font-size:14px;min-width:0}
+@media(max-width:560px){.mod>div{grid-template-columns:1fr;gap:4px}}
+
+/* inversión */
+.precio{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:22px}
+.precio.destacado{border:2px solid var(--laton)}
+.precio+.precio{margin-top:16px}
+.precio-top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.monto{font-family:var(--display);font-size:clamp(26px,5vw,34px);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.chip{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;padding:4px 9px;border-radius:2px;background:var(--laton-bg);color:var(--laton)}
+.precio ul{margin:14px 0 0;padding-left:18px;color:var(--tinta2);font-size:14px}
+.precio li{margin-bottom:5px}
+
+/* pagos */
+.pagos{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:6px}
+.pago{background:var(--panel);border:1px solid var(--linea);border-left:3px solid var(--laton);border-radius:3px;padding:14px 16px}
+.pago .pct{font-family:var(--display);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.pago .cuando{font-size:13px;color:var(--tinta2);margin-top:2px}
+.pago .mxn{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:6px}
+
+/* listas simples */
+.lista{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.lista li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:14.5px;color:var(--tinta2)}
+.lista li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--laton);margin-top:9px}
+.lista b{color:var(--tinta);font-weight:600}
+.no li::before{background:var(--tinta3)}
+
+/* tabla recurrente */
+table{width:100%;border-collapse:collapse;font-size:14px}
+.tabla-wrap{overflow-x:auto;border:1px solid var(--linea);border-radius:4px;background:var(--panel)}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--linea);vertical-align:top}
+th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+
+.nota{background:var(--ok-bg);border-radius:4px;padding:16px 18px;font-size:14px;color:var(--tinta);border-left:3px solid var(--ok)}
+.cond{font-size:13.5px;color:var(--tinta2);display:grid;gap:9px;padding-left:18px;margin:0}
+.firma{margin-top:52px;padding-top:24px;border-top:2px solid var(--tinta);display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.firma .linea-firma{border-bottom:1px solid var(--tinta3);height:40px}
+.firma small{display:block;margin-top:7px;font-size:12px;color:var(--tinta3)}
+
+/* fases */
+.fase{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:20px;display:grid;gap:12px}
+.fase+.fase{margin-top:14px}
+.fase-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.fase-n{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--laton)}
+.fase h3{font-family:var(--display);font-size:21px;font-weight:500;margin-top:2px}
+.fase .monto{font-size:clamp(22px,4.5vw,28px)}
+.fase p{margin:0;color:var(--tinta2);font-size:14.5px}
+.fase ul{margin:0;padding-left:18px;color:var(--tinta2);font-size:14px;display:grid;gap:4px}
+.pie-fase{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding-top:12px;border-top:1px solid var(--linea);font-size:13px;color:var(--tinta2)}
+.pie-fase b{color:var(--tinta);font-weight:600}
+.demo{margin-left:auto;font-weight:600;color:var(--laton);text-decoration:none;border-bottom:1px solid currentColor}
+.demo:focus-visible{outline:2px solid var(--laton);outline-offset:3px}
+.etapa-obra{margin:34px 0 14px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--tinta3)}
+.etapa-obra::after{content:"";flex:1;height:1px;background:var(--linea)}
+.pagos2{text-align:right}.pagos2 small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600}
+.total{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;align-items:baseline;padding:18px 20px;border:2px solid var(--tinta);border-radius:4px;margin-top:18px}
+
+@media print{body{background:#fff}.wrap{padding-block:24px}.fase,.precio,.tabla-wrap{break-inside:avoid}a.demo{color:var(--laton)}}
+
+tfoot td{font-weight:700;border-top:2px solid var(--tinta)}
+@media print{body{background:#fff}.wrap{padding-block:20px}section{margin-top:30px}.tabla-wrap{break-inside:avoid}}
+</style></head><body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Cotización</p>
+    <h1>Aplicación de operación ValorCity</h1>
+    <dl class="meta">
+      <div><dt>Cliente</dt><dd>ValorCity</dd></div>
+      <div><dt>Atención</dt><dd>Sergio Moreno</dd></div>
+      <div><dt>Proveedor</dt><dd>Mauricio Varela</dd></div>
+      <div><dt>Folio</dt><dd>COT-2026-003</dd></div>
+      <div><dt>Fecha</dt><dd>13 de noviembre de 2026</dd></div>
+      <div><dt>Vigencia</dt><dd>30 días naturales</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2>Opción A · Por fases</h2>
+    <p class="sub">Cada fase se paga 50% al iniciar y 50% al entregarla funcionando.</p>
+    <div class="tabla-wrap"><table>
+      <thead><tr><th>Fase</th><th>Concepto</th><th>Subtotal</th><th>IVA 16%</th><th>Total</th></tr></thead>
+      <tbody><tr><td>Fase 1</td><td>App del residente</td><td class="num">$34,000</td><td class="num">$5,440</td><td class="num">$39,440</td></tr><tr><td>Fase 2</td><td>Papás y mantenimiento</td><td class="num">$38,000</td><td class="num">$6,080</td><td class="num">$44,080</td></tr><tr><td>Fase 3</td><td>Caseta</td><td class="num">$50,000</td><td class="num">$8,000</td><td class="num">$58,000</td></tr><tr><td>Fase 4</td><td>Cobranza</td><td class="num">$54,000</td><td class="num">$8,640</td><td class="num">$62,640</td></tr><tr><td>Fase 5</td><td>Inversionistas y comunidad</td><td class="num">$58,000</td><td class="num">$9,280</td><td class="num">$67,280</td></tr></tbody>
+      <tfoot><tr><td></td><td>Total opción A</td><td class="num">$234,000</td><td class="num">$37,440</td><td class="num">$271,440</td></tr></tfoot>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Opción B · Proyecto completo</h2>
+    <p class="sub">Las cinco fases contratadas juntas, con 5% de descuento ($11,700 menos antes de IVA).</p>
+    <div class="tabla-wrap"><table>
+      <thead><tr><th>Pago</th><th>Cuándo</th><th>Subtotal</th><th>IVA 16%</th><th>Total</th></tr></thead>
+      <tbody><tr><td>40%</td><td>Al firmar</td><td class="num">$88,920</td><td class="num">$14,227</td><td class="num">$103,147</td></tr><tr><td>30%</td><td>Al entregar la fase 3</td><td class="num">$66,690</td><td class="num">$10,670</td><td class="num">$77,360</td></tr><tr><td>30%</td><td>Al entregar la fase 5</td><td class="num">$66,690</td><td class="num">$10,670</td><td class="num">$77,360</td></tr></tbody>
+      <tfoot><tr><td></td><td>Total opción B</td><td class="num">$222,300</td><td class="num">$35,568</td><td class="num">$257,868</td></tr></tfoot>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Opcional</h2>
+    <div class="tabla-wrap"><table>
+      <thead><tr><th>Servicio</th><th>Subtotal</th><th>Total con IVA</th></tr></thead>
+      <tbody>
+        <tr><td>Soporte y mantenimiento mensual, al terminar la garantía de 90 días</td><td class="num">$5,000 / mes</td><td class="num">$5,800 / mes</td></tr>
+        <tr><td>Cambios fuera de alcance</td><td class="num">$850 / hora</td><td class="num">$986 / hora</td></tr>
+      </tbody>
+    </table></div>
+    <p class="sub" style="margin-top:12px;font-size:13.5px">No incluye servidor, pasarela de pagos ni cuentas de App Store y Google Play, que se contratan a nombre de ValorCity. El alcance de cada fase es el descrito en la propuesta PRO-2026-003.</p>
+  </section>
+
+  <div class="firma">
+    <div><div class="linea-firma"></div><small>Acepto · ValorCity</small></div>
+    <div><div class="linea-firma"></div><small>Mauricio Varela · Proveedor</small></div>
+  </div>
+</div></body></html>
