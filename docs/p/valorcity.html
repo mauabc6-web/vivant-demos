@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta App ValorCity</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+/* Cotización: columna única de lectura, tabla de alcance, bloque de inversión destacado, condiciones al pie */
+:root{
+  --papel:#f7f6f2; --panel:#ffffff; --tinta:#1b2027; --tinta2:#5b6572; --tinta3:#8b94a0;
+  --linea:#dedad2; --laton:#8a6a2f; --laton-bg:#f2ead9;
+  --ok:#2f6b4f; --ok-bg:#e6efe9;
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --texto:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papel:#13161a; --panel:#1a1e24; --tinta:#e8e5df; --tinta2:#a2abb6; --tinta3:#79828e;
+  --linea:#2b3038; --laton:#d4ac6a; --laton-bg:#2a2317;
+  --ok:#7fc4a0; --ok-bg:#1a2a22; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding-block:48px 64px;padding-left:20px;padding-right:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--laton);font-weight:600}
+h1{font-family:var(--display);font-size:clamp(30px,6vw,42px);font-weight:500;line-height:1.15;margin-top:10px;letter-spacing:-.01em}
+h2{font-family:var(--display);font-size:clamp(21px,4vw,26px);font-weight:500;margin-bottom:6px}
+h3{font-size:15px;font-weight:600}
+p{margin:0 0 14px}
+.sub{color:var(--tinta2)}
+section{margin-top:48px}
+.rule{height:1px;background:var(--linea);border:0;margin:0}
+
+/* encabezado */
+.meta{display:grid;gap:14px 28px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:26px;padding-top:22px;border-top:2px solid var(--tinta)}
+.meta div{min-width:0}
+.meta dt{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta3);font-weight:600;margin-bottom:3px}
+.meta dd{margin:0;font-size:14.5px;font-weight:500}
+
+/* alcance */
+.mod{display:grid;gap:0;border:1px solid var(--linea);border-radius:4px;overflow:hidden;background:var(--panel)}
+.mod>div{display:grid;grid-template-columns:150px 1fr;gap:4px 20px;padding:16px 18px;border-bottom:1px solid var(--linea)}
+.mod>div:last-child{border-bottom:0}
+.mod b{font-size:14px}
+.mod span{color:var(--tinta2);font-size:14px;min-width:0}
+@media(max-width:560px){.mod>div{grid-template-columns:1fr;gap:4px}}
+
+/* inversión */
+.precio{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:22px}
+.precio.destacado{border:2px solid var(--laton)}
+.precio+.precio{margin-top:16px}
+.precio-top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.monto{font-family:var(--display);font-size:clamp(26px,5vw,34px);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.chip{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;padding:4px 9px;border-radius:2px;background:var(--laton-bg);color:var(--laton)}
+.precio ul{margin:14px 0 0;padding-left:18px;color:var(--tinta2);font-size:14px}
+.precio li{margin-bottom:5px}
+
+/* pagos */
+.pagos{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:6px}
+.pago{background:var(--panel);border:1px solid var(--linea);border-left:3px solid var(--laton);border-radius:3px;padding:14px 16px}
+.pago .pct{font-family:var(--display);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.pago .cuando{font-size:13px;color:var(--tinta2);margin-top:2px}
+.pago .mxn{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:6px}
+
+/* listas simples */
+.lista{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.lista li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:14.5px;color:var(--tinta2)}
+.lista li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--laton);margin-top:9px}
+.lista b{color:var(--tinta);font-weight:600}
+.no li::before{background:var(--tinta3)}
+
+/* tabla recurrente */
+table{width:100%;border-collapse:collapse;font-size:14px}
+.tabla-wrap{overflow-x:auto;border:1px solid var(--linea);border-radius:4px;background:var(--panel)}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--linea);vertical-align:top}
+th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+
+.nota{background:var(--ok-bg);border-radius:4px;padding:16px 18px;font-size:14px;color:var(--tinta);border-left:3px solid var(--ok)}
+.cond{font-size:13.5px;color:var(--tinta2);display:grid;gap:9px;padding-left:18px;margin:0}
+.firma{margin-top:52px;padding-top:24px;border-top:2px solid var(--tinta);display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.firma .linea-firma{border-bottom:1px solid var(--tinta3);height:40px}
+.firma small{display:block;margin-top:7px;font-size:12px;color:var(--tinta3)}
+
+/* fases */
+.fase{background:var(--panel);border:1px solid var(--linea);border-radius:4px;padding:20px;display:grid;gap:12px}
+.fase+.fase{margin-top:14px}
+.fase-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.fase-n{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--laton)}
+.fase h3{font-family:var(--display);font-size:21px;font-weight:500;margin-top:2px}
+.fase .monto{font-size:clamp(22px,4.5vw,28px)}
+.fase p{margin:0;color:var(--tinta2);font-size:14.5px}
+.fase ul{margin:0;padding-left:18px;color:var(--tinta2);font-size:14px;display:grid;gap:4px}
+.pie-fase{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding-top:12px;border-top:1px solid var(--linea);font-size:13px;color:var(--tinta2)}
+.pie-fase b{color:var(--tinta);font-weight:600}
+.demo{margin-left:auto;font-weight:600;color:var(--laton);text-decoration:none;border-bottom:1px solid currentColor}
+.demo:focus-visible{outline:2px solid var(--laton);outline-offset:3px}
+.etapa-obra{margin:34px 0 14px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--tinta3)}
+.etapa-obra::after{content:"";flex:1;height:1px;background:var(--linea)}
+.pagos2{text-align:right}.pagos2 small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta3);font-weight:600}
+.total{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;align-items:baseline;padding:18px 20px;border:2px solid var(--tinta);border-radius:4px;margin-top:18px}
+
+@media print{body{background:#fff}.wrap{padding-block:24px}.fase,.precio,.tabla-wrap{break-inside:avoid}a.demo{color:var(--laton)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Propuesta · Aplicación de operación</p>
+    <h1>La app de ValorCity, construida a tu nombre y por fases</h1>
+    <p class="sub" style="font-size:16px;max-width:62ch">Una sola aplicación para residentes, papás, caseta, mantenimiento e inversionistas. Pagas por etapas, cada una se entrega funcionando, y el código es de ValorCity desde el primer día.</p>
+    <dl class="meta">
+      <div><dt>Preparada para</dt><dd>Sergio Moreno</dd></div>
+      <div><dt>Proyecto</dt><dd>ValorCity · Vivienda estudiantil</dd></div>
+      <div><dt>Elaborada por</dt><dd>Mauricio Varela</dd></div>
+      <div><dt>Folio</dt><dd>PRO-2026-003</dd></div>
+      <div><dt>Fecha</dt><dd>13 de noviembre de 2026</dd></div>
+      <div><dt>Vigencia</dt><dd>30 días naturales</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2>Por qué así</h2>
+    <ul class="lista">
+      <li><span><b>La puedes probar hoy.</b> Ya existe una versión de demostración con los perfiles de residente, papá, caseta, mantenimiento, inversionista y administración. No compras un documento, compras algo que ya viste funcionar.</span></li>
+      <li><span><b>El código es tuyo desde el día uno.</b> Se construye en el repositorio y las cuentas de ValorCity, sin depender de la plataforma de un tercero ni de una licencia para seguir operando.</span></li>
+      <li><span><b>Sin renta obligatoria.</b> Pagas cada fase y ya. El soporte mensual es opcional.</span></li>
+      <li><span><b>Empiezas con $17,000.</b> Cada fase se decide cuando la anterior ya está funcionando.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Las fases</h2>
+    
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 1</span><h3>App del residente</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$17,000 MXN</div></div></div>
+      <p>Lo que el residente usa todos los días, con su panel de administración. Ya existe una versión de prueba que se puede abrir hoy.</p>
+      <ul><li>Acceso por perfil: residente, papá o tutor, caseta, mantenimiento, inversionista y administración</li><li>Pases de invitado con código QR, válidos solo en la fecha autorizada</li><li>Reserva de coworking, van, bicicletas y amenidades con control de cupo</li><li>Avisos del desarrollo y botón de pánico con ubicación</li><li>Datos separados por desarrollo, listos para los siguientes proyectos</li></ul>
+      <div class="pie-fase"><span>Entrega <b>5 semanas</b></span><span>Fase completa <b>$34,000</b></span><a class="demo" href="https://mauabc6-web.github.io/vivant-demos/valorcity-app.html">Probar la app</a></div>
+    </div>
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 2</span><h3>Papás y mantenimiento</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$19,000 MXN</div></div></div>
+      <p>La tranquilidad de las familias y el control de las fallas.</p>
+      <ul><li>Vista del papá o tutor: visitas, alertas y avisos de su hijo</li><li>El residente decide qué comparte: siempre, solo de noche o nunca</li><li>Aviso al tutor en cada entrada y salida, si el residente lo autoriza</li><li>Reportes de fallas con foto, bandeja de mantenimiento y cierre con evidencia</li></ul>
+      <div class="pie-fase"><span>Entrega <b>3 semanas</b></span><span>Fase completa <b>$38,000</b></span></div>
+    </div>
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 3</span><h3>Caseta</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$21,000 MXN</div></div></div>
+      <p>La herramienta del vigilante, pensada para funcionar aunque falle el internet.</p>
+      <ul><li>Escaneo del QR con la cámara del teléfono o tableta</li><li>Visitante sin anunciar: se consulta al residente desde caseta</li><li>Bitácora de entradas y salidas que no se puede editar</li><li>Protocolo de pánico: aviso con ficha y ubicación, acuse y cierre por administración</li><li>Rondines, novedades y relevo de turno</li><li>Modo sin internet que sincroniza al reconectar</li></ul>
+      <div class="pie-fase"><span>Entrega <b>4 semanas</b></span><span>Fase completa <b>$42,000</b></span></div>
+    </div>
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 4</span><h3>Cobranza</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$23,000 MXN</div></div></div>
+      <p>La renta se cobra dentro de la app y el estado de cuenta se actualiza solo.</p>
+      <ul><li>Estado de cuenta por residente, con abonos y recordatorios</li><li>Pago con tarjeta, SPEI u OXXO por medio de una pasarela de pagos</li><li>Comprobantes automáticos y conciliación para administración</li><li>El tutor consulta el estado de cuenta si el residente lo comparte</li></ul>
+      <div class="pie-fase"><span>Entrega <b>4 semanas</b></span><span>Fase completa <b>$46,000</b></span></div>
+    </div>
+    <div class="fase">
+      <div class="fase-top"><div><span class="fase-n">Fase 5</span><h3>Inversionistas y comunidad</h3></div><div class="pagos2"><small>2 pagos de</small><div class="monto">$25,000 MXN</div></div></div>
+      <p>Los números para cada inversionista y la vida del desarrollo, y la publicación en las tiendas.</p>
+      <ul><li>Cartera por suite: renta cobrada, gastos, NOI y cap rate</li><li>Participaciones fraccionales que nunca suman más de 100%</li><li>Eventos, muro de la comunidad y estancia de familiares en cuarto de visitas</li><li>Reporte confidencial que solo ve dirección</li><li>Publicación en App Store y Google Play a nombre de ValorCity</li></ul>
+      <div class="pie-fase"><span>Entrega <b>4 semanas</b></span><span>Fase completa <b>$50,000</b></span></div>
+    </div>
+    <p class="nota" style="margin-top:18px">Las cinco fases suman $210,000 MXN más IVA, repartidos en diez pagos a lo largo de unos cuatro meses. El pago más alto es de $25,000.</p>
+    <p class="sub" style="margin-top:12px;font-size:13.5px">Cada fase se cubre en dos pagos: uno al iniciar y otro al recibirla funcionando. Los plazos cuentan a partir del primer pago de cada fase.</p>
+  </section>
+
+  <section>
+    <h2>Se puede sumar después</h2>
+    <ul class="lista no">
+      <li><span><b>Reconocimiento facial en accesos.</b> Requiere equipo en las puertas; se cotiza junto con el proveedor del hardware. Mientras, se entra con QR o código.</span></li>
+      <li><span><b>App de recepción:</b> paquetería, llaves, mudanzas, entrega y devolución de suite, depósitos.</span></li>
+      <li><span><b>App de concierge:</b> solicitudes, tickets, despacho de van y moderación de la comunidad.</span></li>
+      <li><span><b>Conexión con plumas, torniquetes o cerraduras.</b></span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Soporte mensual</h2>
+    <p class="sub">Opcional, al terminar la garantía.</p>
+    <div class="tabla-wrap"><table>
+      <thead><tr><th>Servicio</th><th>Incluye</th><th>Costo</th></tr></thead>
+      <tbody>
+        <tr><td><b>Mantenimiento</b></td><td>Actualizaciones de iOS y Android, respaldos, monitoreo y corrección de fallas</td><td class="num">$5,000 MXN / mes</td></tr>
+        <tr><td><b>Cambios y mejoras</b></td><td>Ajustes fuera del alcance de cada fase</td><td class="num">$850 MXN / hora</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Costos a cargo de ValorCity</h2>
+    <p class="sub">Se contratan a nombre de ValorCity y se pagan directo a cada proveedor.</p>
+    <div class="tabla-wrap"><table>
+      <thead><tr><th>Concepto</th><th>Desde</th><th>Estimado</th></tr></thead>
+      <tbody>
+        <tr><td>Servidor y base de datos</td><td>Fase 1</td><td class="num">$800 a $2,500 MXN / mes</td></tr>
+        <tr><td>Pasarela de pagos</td><td>Fase 4</td><td class="num">Comisión por cobro, según proveedor</td></tr>
+        <tr><td>Cuenta Apple Developer</td><td>Fase 5</td><td class="num">$1,900 MXN / año</td></tr>
+        <tr><td>Cuenta Google Play</td><td>Fase 5</td><td class="num">$500 MXN, pago único</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Qué se entrega en cada fase</h2>
+    <ul class="lista">
+      <li><span><b>La fase funcionando</b> con los datos reales del desarrollo.</span></li>
+      <li><span><b>Código fuente y accesos</b> en el repositorio y las cuentas de ValorCity.</span></li>
+      <li><span><b>Capacitación</b> para quien la va a usar: administración, caseta o mantenimiento.</span></li>
+      <li><span><b>Garantía de 90 días</b> sobre errores de lo entregado.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Condiciones</h2>
+    <ol class="cond">
+      <li>Cada fase es un acuerdo independiente. Contratar una no obliga a contratar la siguiente.</li>
+      <li>El alcance de cada fase es el descrito. Lo adicional se cotiza antes de hacerse.</li>
+      <li>Se contemplan dos rondas de ajustes por fase.</li>
+      <li>ValorCity proporciona la información del desarrollo: suites, residentes, reglamento y tarifas.</li>
+      <li>Los retrasos en aprobaciones o en la entrega de información recorren el plazo.</li>
+      <li>La aprobación en App Store y Google Play depende de cada tienda y no condiciona el pago final de la fase 5.</li>
+      <li>Los datos personales de residentes y familias son responsabilidad de ValorCity conforme a la ley de protección de datos; la app incluye aviso de privacidad, consentimiento y derechos ARCO.</li>
+    </ol>
+  </section>
+
+  <div class="firma">
+    <div><div class="linea-firma"></div><small>Por ValorCity · Nombre y firma</small></div>
+    <div><div class="linea-firma"></div><small>Mauricio Varela · Proveedor</small></div>
+  </div>
+</div>
+</body>
+</html>
